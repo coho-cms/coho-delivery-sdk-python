@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries",
+    "auth": "other-key"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "content-type": "application/problem+json",
+      "etag": false
+    },
+    "body": {
+      "code": "PROJECT_NOT_FOUND",
+      "type": "https://coho.dev/problems/project-not-found",
+      "title": "Not found",
+      "status": 404,
+      "detail": "No such project"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries",
+    "auth": "none"
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "content-type": "application/problem+json",
+      "etag": false
+    },
+    "body": {
+      "code": "KEY_REQUIRED",
+      "type": "https://coho.dev/problems/key-required",
+      "title": "A delivery key is required",
+      "status": 401,
+      "detail": "A delivery key is required for 'v0.0.1'"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries?type=notice&order=-priority",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [],
+      "entries": {},
+      "unresolved": {},
+      "hasMore": false
+    }
+  }
+}

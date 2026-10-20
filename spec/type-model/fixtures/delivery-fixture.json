@@ -1,0 +1,192 @@
+{
+  "irVersion": "1.4",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b1",
+    "ref": "v0.0.1",
+    "immutable": true,
+    "schemaHash": "sha256:7cb3daf41cbe9c34e84797f25ff4f3b681d18d3e3281c221b28c51b3dd8a24f2"
+  },
+  "types": {
+    "article": {
+      "slug": "article",
+      "name": "Article",
+      "version": "01920000-0000-7000-8000-0000000000b1",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "body",
+          "name": "body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "plain"
+        },
+        {
+          "id": "rank",
+          "name": "rank",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true
+        },
+        {
+          "id": "related",
+          "name": "related",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "article"
+          ]
+        }
+      ]
+    },
+    "figure": {
+      "slug": "figure",
+      "name": "Figure",
+      "version": "01920000-0000-7000-8000-0000000000b3",
+      "fields": [
+        {
+          "id": "caption",
+          "name": "caption",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "image",
+          "name": "image",
+          "kind": "asset",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "accept": [
+            "image/*"
+          ]
+        },
+        {
+          "id": "poster",
+          "name": "poster",
+          "kind": "asset",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "accept": []
+        },
+        {
+          "id": "gallery",
+          "name": "gallery",
+          "kind": "asset",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "accept": []
+        },
+        {
+          "id": "sources",
+          "name": "sources",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "citation"
+          ]
+        }
+      ]
+    },
+    "notice": {
+      "slug": "notice",
+      "name": "Notice",
+      "version": "01920000-0000-7000-8000-0000000000b2",
+      "fields": [
+        {
+          "id": "priority",
+          "name": "priority",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true
+        },
+        {
+          "id": "message",
+          "name": "message",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    }
+  },
+  "components": {
+    "citation": {
+      "slug": "citation",
+      "name": "Citation",
+      "version": "01920000-0000-7000-8000-0000000000b9",
+      "fields": [
+        {
+          "id": "authors",
+          "name": "authors",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "kind": "integer",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "url",
+          "name": "url",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    }
+  }
+}

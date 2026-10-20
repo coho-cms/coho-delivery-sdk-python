@@ -1,0 +1,48 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries/00000000-0000-7000-8000-0000000000f2",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [
+        "00000000-0000-7000-8000-0000000000f2"
+      ],
+      "entries": {
+        "00000000-0000-7000-8000-0000000000f2": {
+          "id": "00000000-0000-7000-8000-0000000000f2",
+          "slug": "figure-2",
+          "type": "figure",
+          "fields": {
+            "caption": "With sources",
+            "sources": [
+              {
+                "_id": "00000000-0000-7000-8000-0000000000a1",
+                "_type": "citation",
+                "authors": "ASCE",
+                "title": "Minimum design loads and associated criteria for buildings and other structures",
+                "url": "https://doi.org/10.1061/9780784415788",
+                "year": 2022
+              },
+              {
+                "_id": "00000000-0000-7000-8000-0000000000a2",
+                "_type": "citation",
+                "authors": "Rodegerdts, L., et al.",
+                "title": "Roundabouts: An informational guide",
+                "year": 2010
+              }
+            ]
+          }
+        }
+      },
+      "unresolved": {}
+    }
+  }
+}

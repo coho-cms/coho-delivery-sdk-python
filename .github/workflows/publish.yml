@@ -1,0 +1,88 @@
+name: Publish
+
+# Publishes coho-delivery-sdk and coho-codegen to PyPI, together and at one version, when a
+# release tag is pushed: release-v2026.1.0 publishes 2026.1.0, release-v2026.2.0a1 the
+# prerelease 2026.2.0a1. A library coho-codegen creates is pinned to that version of both,
+# and the template it creates libraries from is bundled from coho-template-python at the
+# tag of the same name, so tag the template first. A version cannot be published twice, so
+# every fix is a new version. To try again after a failure, re-run this workflow's run.
+#
+# Trusted Publishing: PyPI trusts this workflow file in this repository, in the `pypi`
+# environment, for both projects, and gives it a short-lived token. No token is stored here.
+on:
+  push:
+    tags: ['release-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      # The tag less its release-v, checked against both packages' pyproject.toml: the version
+      # a build carries comes from there, so a difference is a failure, not a warning.
+      - name: The version, from the tag
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#release-v}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+((a|b|rc)[0-9]+)?$ ]]; then
+            echo "::error::$GITHUB_REF_NAME does not name a version: release tags are release-v2026.1.0, or release-v2026.2.0a1"
+            exit 1
+          fi
+          for package in delivery codegen; do
+            local=$(sed -n 's/^version = "\(.*\)"$/\1/p' "packages/$package/pyproject.toml")
+            if [[ "$local" != "$version" ]]; then
+              echo "::error::packages/$package/pyproject.toml says $local; the tag says $version"
+              exit 1
+            fi
+          done
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Check out the template to bundle, at the same tag
+        uses: actions/checkout@v5
+        with:
+          repository: coho-cms/coho-template-python
+          ref: refs/tags/${{ github.ref_name }}
+          path: template-checkout
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.13'
+      - run: uv sync --locked
+      - run: uv run mypy
+      - run: uv run pytest
+      - name: Bundle the template into coho-codegen
+        run: uv run python packages/codegen/scripts/bundle.py "$GITHUB_WORKSPACE/template-checkout"
+      - name: Build both packages
+        run: |
+          uv build --package coho-delivery-sdk --out-dir dist
+          uv build --package coho-codegen --out-dir dist
+      # The template is git-ignored, so a wheel without it would build without complaint.
+      - name: Every package is there, at the tag's version, with the template
+        run: |
+          ls dist/coho_delivery_sdk-"$VERSION"-py3-none-any.whl dist/coho_codegen-"$VERSION"-py3-none-any.whl
+          unzip -l dist/coho_codegen-"$VERSION"-py3-none-any.whl | grep -q 'coho_codegen/template/pyproject.toml'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+    permissions:
+      # For the token PyPI exchanges for a short-lived one.
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

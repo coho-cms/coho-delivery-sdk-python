@@ -1,0 +1,423 @@
+{
+  "irVersion": "1.4",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b4",
+    "ref": "v0.0.1",
+    "immutable": true,
+    "schemaHash": "sha256:79b5ca7c0e5538967f1b474c0a1ae8867902c4505455c15f6722030af81d316b"
+  },
+  "types": {
+    "landingPage": {
+      "slug": "landingPage",
+      "name": "Landing page",
+      "version": "01920000-0000-7000-8000-0000000000e4",
+      "extends": "page",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "max": 200,
+          "inherited": true
+        },
+        {
+          "id": "summary",
+          "name": "summary",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown",
+          "inherited": true
+        },
+        {
+          "id": "rank",
+          "name": "rank",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true,
+          "inherited": true
+        },
+        {
+          "id": "related",
+          "name": "related",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "page"
+          ],
+          "inherited": true
+        },
+        {
+          "id": "blocks",
+          "name": "blocks",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "block"
+          ],
+          "inherited": true
+        },
+        {
+          "id": "campaign",
+          "name": "campaign",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    },
+    "menu": {
+      "slug": "menu",
+      "name": "Menu",
+      "version": "01920000-0000-7000-8000-0000000000e5",
+      "fields": [
+        {
+          "id": "items",
+          "name": "items",
+          "kind": "reference",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "page"
+          ]
+        },
+        {
+          "id": "featured",
+          "name": "featured",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "of": [
+            "servicePage"
+          ]
+        }
+      ]
+    },
+    "page": {
+      "slug": "page",
+      "name": "Page",
+      "version": "01920000-0000-7000-8000-0000000000e1",
+      "abstract": true,
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "max": 200
+        },
+        {
+          "id": "summary",
+          "name": "summary",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown"
+        },
+        {
+          "id": "rank",
+          "name": "rank",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true
+        },
+        {
+          "id": "related",
+          "name": "related",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "page"
+          ]
+        },
+        {
+          "id": "blocks",
+          "name": "blocks",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "block"
+          ]
+        }
+      ]
+    },
+    "premiumService": {
+      "slug": "premiumService",
+      "name": "Premium service",
+      "version": "01920000-0000-7000-8000-0000000000e3",
+      "extends": "servicePage",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Service name",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "max": 120,
+          "inherited": true
+        },
+        {
+          "id": "summary",
+          "name": "summary",
+          "kind": "longText",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown",
+          "inherited": true
+        },
+        {
+          "id": "rank",
+          "name": "rank",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true,
+          "inherited": true
+        },
+        {
+          "id": "related",
+          "name": "related",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "page"
+          ],
+          "inherited": true
+        },
+        {
+          "id": "blocks",
+          "name": "blocks",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "block"
+          ],
+          "inherited": true
+        },
+        {
+          "id": "priceBand",
+          "name": "Price band",
+          "kind": "choice",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "values": [
+            "Ruinous"
+          ]
+        },
+        {
+          "id": "sla",
+          "name": "SLA hours",
+          "kind": "integer",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": true
+        }
+      ]
+    },
+    "servicePage": {
+      "slug": "servicePage",
+      "name": "Service page",
+      "version": "01920000-0000-7000-8000-0000000000e2",
+      "extends": "page",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Service name",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "max": 120
+        },
+        {
+          "id": "summary",
+          "name": "summary",
+          "kind": "longText",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown"
+        },
+        {
+          "id": "rank",
+          "name": "rank",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true,
+          "inherited": true
+        },
+        {
+          "id": "related",
+          "name": "related",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "page"
+          ],
+          "inherited": true
+        },
+        {
+          "id": "blocks",
+          "name": "blocks",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "block"
+          ],
+          "inherited": true
+        },
+        {
+          "id": "priceBand",
+          "name": "Price band",
+          "kind": "choice",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "values": [
+            "Modest",
+            "Ruinous"
+          ]
+        }
+      ]
+    }
+  },
+  "components": {
+    "block": {
+      "slug": "block",
+      "name": "Block",
+      "version": "01920000-0000-7000-8000-0000000000f1",
+      "abstract": true,
+      "fields": [
+        {
+          "id": "heading",
+          "name": "heading",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    },
+    "quoteBlock": {
+      "slug": "quoteBlock",
+      "name": "Quote block",
+      "version": "01920000-0000-7000-8000-0000000000f2",
+      "extends": "block",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "heading",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "inherited": true
+        },
+        {
+          "id": "quote",
+          "name": "quote",
+          "kind": "longText",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "plain"
+        }
+      ]
+    },
+    "textBlock": {
+      "slug": "textBlock",
+      "name": "Text block",
+      "version": "01920000-0000-7000-8000-0000000000f3",
+      "extends": "block",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "heading",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "inherited": true
+        },
+        {
+          "id": "body",
+          "name": "body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown"
+        }
+      ]
+    }
+  }
+}

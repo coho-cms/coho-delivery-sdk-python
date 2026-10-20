@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Coho type model",
+  "description": "A language-neutral description of one ref's content types, read by code generators. Readers must ignore keys they do not know and refuse an irVersion whose major they do not support, so no object here closes its properties.",
+  "type": "object",
+  "required": ["irVersion", "source", "types"],
+  "properties": {
+    "irVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "major.minor. A minor bump only adds optional keys or field kinds."
+    },
+    "source": {
+      "type": "object",
+      "required": ["project", "ref", "immutable", "schemaHash"],
+      "properties": {
+        "project": { "type": "string", "format": "uuid" },
+        "ref": { "type": "string", "minLength": 1, "description": "The branch or tag the types were read from." },
+        "immutable": { "type": "boolean", "description": "True for a tag. A branch's types can change after this file was produced." },
+        "schemaHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "SHA-256 of `types` serialized compactly in the order produced, or of `{\"types\": …, \"components\": …}` when `components` is not empty (since 1.2), with `\"traits\": …` after them when the ref has traits (since 1.4). Equal hashes mean equal types, whichever ref they came from."
+        }
+      }
+    },
+    "types": {
+      "type": "object",
+      "description": "Content types keyed by slug, in sorted order.",
+      "additionalProperties": { "$ref": "#/$defs/type" }
+    },
+    "components": {
+      "type": "object",
+      "description": "Since 1.2: component types keyed by slug, in sorted order, the types a repeater's items may be. The same shape as `types`, and never sortable. A component's slug is never also a content type's. Absent before 1.2, which a reader takes as empty.",
+      "additionalProperties": { "$ref": "#/$defs/type" }
+    },
+    "traits": {
+      "type": "object",
+      "description": "Since 1.4: traits keyed by slug, in sorted order: named groups of fields that types take (doc 05 §10). Each lists its fields as the trait declares them; every type that has a trait already includes those fields in its own `fields`, marked `trait`. A trait is never a type: no entry is of one, and no `of` names one. Absent when the ref has none, which a reader takes as empty.",
+      "additionalProperties": { "$ref": "#/$defs/trait" }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Things a generator should print. Absent when there are none.",
+      "items": { "$ref": "#/$defs/warning" }
+    }
+  },
+  "$defs": {
+    "trait": {
+      "type": "object",
+      "required": ["slug", "name", "version", "fields"],
+      "properties": {
+        "slug": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "format": "uuid" },
+        "fields": {
+          "type": "array",
+          "description": "As the trait declares them, in its order. Fields hidden from the API are not listed.",
+          "items": { "$ref": "#/$defs/field" }
+        }
+      }
+    },
+    "type": {
+      "type": "object",
+      "required": ["slug", "name", "version", "fields"],
+      "properties": {
+        "slug": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1, "description": "The editors' display name; the slug when there is none." },
+        "version": { "type": "string", "format": "uuid", "description": "The type version this ref pins." },
+        "extends": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Since 1.3: the slug of the type this one extends, a key of the same map (`types` or `components`). Absent for a type with no parent, or whose parent is not on this ref (reported in `warnings`). The type's `fields` already include everything it inherits (doc 05 §9)."
+        },
+        "abstract": {
+          "const": true,
+          "description": "Since 1.3: present, and true, when no entry is of this type itself, only its descendants'. A reference to it links to one of those."
+        },
+        "traits": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Since 1.4: every trait the type has, each a key of `traits`: its ancestors' first, then its own, each type's in the order it takes them. Absent when it has none. A generator may declare the type as having each trait's fields."
+        },
+        "fields": {
+          "type": "array",
+          "description": "In declaration order. Fields hidden from the API are not listed.",
+          "items": { "$ref": "#/$defs/field" }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["id", "name", "kind", "presence", "required", "localized", "sortable"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9]*$", "description": "The key in an entry's fields. Never changes." },
+        "name": { "type": "string", "minLength": 1, "description": "The editors' label; the id when there is none." },
+        "kind": {
+          "type": "string",
+          "description": "text, longText, number, integer, boolean, datetime, json, repeater, reference, asset (since 1.1), choice or multichoice. A kind a generator does not know is emitted as untyped, with a warning."
+        },
+        "presence": {
+          "enum": ["always", "maybe"],
+          "description": "Whether delivery can leave the field out of an entry. Generators decide optionality from this alone."
+        },
+        "required": { "type": "boolean", "description": "Enforced when an entry is written." },
+        "localized": { "type": "boolean", "description": "Delivered as one locale's value, and absent where that locale has no translation." },
+        "sortable": { "type": "boolean", "description": "Accepted by delivery's `order` on a list of this type." },
+        "trait": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Since 1.4: the trait the field comes from, a key of `traits`. The field here is as this type has it, which may be tighter than the trait's own (doc 05 §10, T6)."
+        },
+        "inherited": {
+          "const": true,
+          "description": "Since 1.3: present, and true, when the field reaches this type exactly as its parent has it: declared by an ancestor, and tightened by none of this type's overrides. A generator may then declare it on the parent alone."
+        },
+        "many": { "type": "boolean", "description": "On references and assets: an array of links rather than one." },
+        "accept": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "On assets (since 1.1): the media types a linked file may be, or family wildcards such as image/*, sorted. Empty means any file Coho stores."
+        },
+        "of": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "On references: the slugs of the types a link may point at, each a key of `types`. Empty when no target type is on this ref. On repeaters: the component types an item may be, sorted; since 1.2 each is a key of `components`, and it is empty when none is on this ref. An item names its component in `_type`."
+        },
+        "values": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "On choice and multichoice: the permitted values, sorted. Content may hold a value added after this file was produced, so generated code must accept unknown values."
+        },
+        "textFormat": {
+          "type": "string",
+          "description": "On longText: plain, markdown or html."
+        },
+        "min": { "type": "integer", "description": "Length for text, the value for numbers, the count for arrays." },
+        "max": { "type": "integer", "description": "Length for text, the value for numbers, the count for arrays." }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "reference" } } },
+          "then": { "required": ["many", "of"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "asset" } } },
+          "then": { "required": ["many", "accept"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "repeater" } } },
+          "then": { "required": ["of"] }
+        },
+        {
+          "if": { "properties": { "kind": { "enum": ["choice", "multichoice"] } } },
+          "then": { "required": ["values"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "longText" } } },
+          "then": { "required": ["textFormat"] }
+        }
+      ]
+    },
+    "warning": {
+      "type": "object",
+      "required": ["type", "field", "message"],
+      "properties": {
+        "type": { "type": "string" },
+        "field": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

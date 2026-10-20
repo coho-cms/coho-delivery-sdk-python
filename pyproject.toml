@@ -1,0 +1,68 @@
+# The workspace: coho-delivery-sdk and coho-codegen, developed and released together.
+# Neither is built from here; each package has its own pyproject.toml.
+[project]
+name = "coho-delivery-sdk-python"
+version = "0"
+requires-python = ">=3.11"
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/delivery", "packages/codegen"]
+
+[tool.uv.sources]
+coho-delivery-sdk = { workspace = true }
+coho-codegen = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "coho-delivery-sdk",
+    "coho-codegen",
+    "pytest>=8.3",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+include = ["*.py", "*.pyi", "pyproject.toml"]
+extend-exclude = [
+    "spec",
+    "packages/codegen/src/coho_codegen/template",
+    # Generated, and compared byte for byte with what the generator writes.
+    "packages/codegen/tests/expected",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "coho_delivery_sdk",
+    "coho_codegen",
+    "replay",
+    "cli_next_blog",
+    "delivery_fixture",
+    "inheritance",
+    "repeaters",
+    "traits",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+# The formatter wraps code. What it cannot wrap, a docstring or a line of generated code
+# spelled as a string, stays whole rather than broken where a reader would not look for it.
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["packages/delivery/src", "packages/delivery/tests", "packages/codegen/src", "packages/codegen/tests"]
+mypy_path = ["packages/delivery/tests", "packages/codegen/tests/expected"]
+exclude = ["packages/codegen/src/coho_codegen/template/"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/delivery/tests", "packages/codegen/tests"]
+addopts = "-q --import-mode=importlib"
+# The replay transport, which the codegen tests use too, and the generated packages they read through.
+pythonpath = ["packages/delivery/tests", "packages/codegen/tests/expected"]

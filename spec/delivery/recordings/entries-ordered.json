@@ -1,0 +1,68 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries?type=article&order=-rank&limit=3&locale=en-US",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [
+        "00000000-0000-7000-8000-0000000000c3",
+        "00000000-0000-7000-8000-0000000000c2",
+        "00000000-0000-7000-8000-0000000000c1"
+      ],
+      "entries": {
+        "00000000-0000-7000-8000-0000000000c1": {
+          "id": "00000000-0000-7000-8000-0000000000c1",
+          "slug": "chain-1",
+          "type": "article",
+          "locale": "en-US",
+          "fields": {
+            "title": "Chain 1",
+            "rank": 101,
+            "related": [
+              "00000000-0000-7000-8000-0000000000c2"
+            ]
+          }
+        },
+        "00000000-0000-7000-8000-0000000000c2": {
+          "id": "00000000-0000-7000-8000-0000000000c2",
+          "slug": "chain-2",
+          "type": "article",
+          "locale": "en-US",
+          "fields": {
+            "title": "Chain 2",
+            "rank": 102,
+            "related": [
+              "00000000-0000-7000-8000-0000000000c3",
+              "00000000-0000-7000-8000-0000000000ff"
+            ]
+          }
+        },
+        "00000000-0000-7000-8000-0000000000c3": {
+          "id": "00000000-0000-7000-8000-0000000000c3",
+          "slug": "chain-3",
+          "type": "article",
+          "locale": "en-US",
+          "fields": {
+            "title": "Chain 3",
+            "rank": 103,
+            "related": [
+              "00000000-0000-7000-8000-0000000000c1"
+            ]
+          }
+        }
+      },
+      "unresolved": {
+        "00000000-0000-7000-8000-0000000000ff": "absent"
+      },
+      "hasMore": true
+    }
+  }
+}

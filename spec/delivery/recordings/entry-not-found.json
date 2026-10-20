@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries-by-slug/nope",
+    "auth": "key"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "content-type": "application/problem+json",
+      "etag": false
+    },
+    "body": {
+      "code": "ENTRY_NOT_FOUND",
+      "type": "https://coho.dev/problems/entry-not-found",
+      "title": "Not found",
+      "status": 404,
+      "detail": "No entry with slug 'nope' on 'v0.0.1'"
+    }
+  }
+}

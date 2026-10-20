@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries?order=rank",
+    "auth": "key"
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "content-type": "application/problem+json",
+      "etag": false
+    },
+    "body": {
+      "code": "INVALID_QUERY",
+      "type": "https://coho.dev/problems/invalid-query",
+      "title": "Invalid query",
+      "status": 400,
+      "detail": "order needs a type: a field is sorted within its type"
+    }
+  }
+}

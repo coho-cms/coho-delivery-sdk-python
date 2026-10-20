@@ -1,0 +1,233 @@
+{
+  "irVersion": "1.4",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b0",
+    "ref": "v1.0.0",
+    "immutable": true,
+    "schemaHash": "sha256:dd33e07ff418b37690bdfc9b6b959f9dc08e64f63e043ef160e9d0b5887d6f67"
+  },
+  "types": {
+    "blogPost": {
+      "slug": "blogPost",
+      "name": "Blog post",
+      "version": "01920000-0000-7000-8000-0000000000a3",
+      "fields": [
+        {
+          "id": "title",
+          "name": "Title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "max": 140
+        },
+        {
+          "id": "summary",
+          "name": "Summary",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "textFormat": "plain"
+        },
+        {
+          "id": "body",
+          "name": "Body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "textFormat": "markdown"
+        },
+        {
+          "id": "layout",
+          "name": "Layout",
+          "kind": "choice",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "values": [
+            "landing",
+            "standard",
+            "wide"
+          ]
+        },
+        {
+          "id": "publishedAt",
+          "name": "Published at",
+          "kind": "datetime",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": true
+        },
+        {
+          "id": "author",
+          "name": "Author",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "of": [
+            "teamMember"
+          ]
+        },
+        {
+          "id": "tags",
+          "name": "Tags",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "tag"
+          ],
+          "max": 5
+        },
+        {
+          "id": "related",
+          "name": "Related posts",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "blogPost"
+          ],
+          "max": 3
+        },
+        {
+          "id": "readingMinutes",
+          "name": "Reading time (minutes)",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true,
+          "min": 1
+        },
+        {
+          "id": "featured",
+          "name": "Featured",
+          "kind": "boolean",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "seoDescription",
+          "name": "SEO description",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 160
+        }
+      ]
+    },
+    "tag": {
+      "slug": "tag",
+      "name": "Tag",
+      "version": "01920000-0000-7000-8000-0000000000a1",
+      "fields": [
+        {
+          "id": "name",
+          "name": "Name",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "max": 40
+        },
+        {
+          "id": "description",
+          "name": "Description",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "plain"
+        }
+      ]
+    },
+    "teamMember": {
+      "slug": "teamMember",
+      "name": "Team member",
+      "version": "01920000-0000-7000-8000-0000000000a2",
+      "fields": [
+        {
+          "id": "fullName",
+          "name": "Full name",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "max": 120
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 120
+        },
+        {
+          "id": "disciplines",
+          "name": "Disciplines",
+          "kind": "multichoice",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "values": [
+            "drainage",
+            "geotechnical",
+            "highways",
+            "structures",
+            "traffic"
+          ],
+          "min": 1
+        },
+        {
+          "id": "bio",
+          "name": "Bio",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "textFormat": "markdown"
+        },
+        {
+          "id": "yearsExperience",
+          "name": "Years of experience",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true,
+          "min": 0
+        }
+      ]
+    }
+  },
+  "components": {}
+}

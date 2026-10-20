@@ -1,0 +1,103 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries/00000000-0000-7000-8000-0000000000f1",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [
+        "00000000-0000-7000-8000-0000000000f1"
+      ],
+      "entries": {
+        "00000000-0000-7000-8000-0000000000f1": {
+          "id": "00000000-0000-7000-8000-0000000000f1",
+          "slug": "figure-1",
+          "type": "figure",
+          "fields": {
+            "caption": "With assets",
+            "image": {
+              "id": "00000000-0000-7000-8000-0000000000e1",
+              "title": "The bridge",
+              "alt": "A suspension bridge at dusk",
+              "focalPoint": {
+                "x": 0.25,
+                "y": 0.75
+              },
+              "file": {
+                "mediaType": "image/jpeg",
+                "byteSize": 81234,
+                "width": 1600,
+                "height": 900,
+                "filename": "Bridge at dusk.jpg"
+              },
+              "url": "https://assets.example.test/{project}/a/1111111111111111111111111111111111111111111111111111111111111111/Bridge%20at%20dusk.jpg",
+              "imageUrl": "https://assets.example.test/{project}/i/1111111111111111111111111111111111111111111111111111111111111111/Bridge%20at%20dusk.jpg"
+            },
+            "poster": null,
+            "gallery": [
+              {
+                "id": "00000000-0000-7000-8000-0000000000e1",
+                "title": "The bridge",
+                "alt": "A suspension bridge at dusk",
+                "focalPoint": {
+                  "x": 0.25,
+                  "y": 0.75
+                },
+                "file": {
+                  "mediaType": "image/jpeg",
+                  "byteSize": 81234,
+                  "width": 1600,
+                  "height": 900,
+                  "filename": "Bridge at dusk.jpg"
+                },
+                "url": "https://assets.example.test/{project}/a/1111111111111111111111111111111111111111111111111111111111111111/Bridge%20at%20dusk.jpg",
+                "imageUrl": "https://assets.example.test/{project}/i/1111111111111111111111111111111111111111111111111111111111111111/Bridge%20at%20dusk.jpg"
+              },
+              {
+                "id": "00000000-0000-7000-8000-0000000000e2",
+                "file": {
+                  "mediaType": "image/svg+xml",
+                  "byteSize": 512,
+                  "filename": "logo.svg"
+                },
+                "url": "https://assets.example.test/{project}/a/2222222222222222222222222222222222222222222222222222222222222222/logo.svg"
+              },
+              {
+                "id": "00000000-0000-7000-8000-0000000000e3",
+                "title": "Brochure",
+                "file": {
+                  "mediaType": "application/pdf",
+                  "byteSize": 204800,
+                  "filename": "brochure.pdf"
+                },
+                "url": "https://assets.example.test/{project}/a/3333333333333333333333333333333333333333333333333333333333333333/brochure.pdf"
+              }
+            ]
+          }
+        }
+      },
+      "unresolved": {},
+      "warnings": [
+        {
+          "code": "ASSET_MISSING",
+          "entry": "00000000-0000-7000-8000-0000000000f1",
+          "field": "gallery",
+          "asset": "00000000-0000-7000-8000-0000000000ef"
+        },
+        {
+          "code": "ASSET_MISSING",
+          "entry": "00000000-0000-7000-8000-0000000000f1",
+          "field": "poster",
+          "asset": "00000000-0000-7000-8000-0000000000ef"
+        }
+      ]
+    }
+  }
+}

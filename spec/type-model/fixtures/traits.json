@@ -1,0 +1,324 @@
+{
+  "irVersion": "1.4",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b5",
+    "ref": "v0.0.1",
+    "immutable": true,
+    "schemaHash": "sha256:37bc33c52072ab5cc60ef450a7800f211f2390eaadfacf32f6544b2c3abe182c"
+  },
+  "types": {
+    "article": {
+      "slug": "article",
+      "name": "Article",
+      "version": "01920000-0000-7000-8000-0000000000e2",
+      "extends": "page",
+      "traits": [
+        "seo",
+        "publishing",
+        "socialCard"
+      ],
+      "fields": [
+        {
+          "id": "metaTitle",
+          "name": "Meta title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "max": 60,
+          "trait": "seo"
+        },
+        {
+          "id": "metaDescription",
+          "name": "Meta description",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 160,
+          "inherited": true,
+          "trait": "seo"
+        },
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "inherited": true
+        },
+        {
+          "id": "body",
+          "name": "body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown",
+          "inherited": true
+        },
+        {
+          "id": "publishedAt",
+          "name": "Published",
+          "kind": "datetime",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": true,
+          "trait": "publishing"
+        },
+        {
+          "id": "author",
+          "name": "author",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "of": [
+            "person"
+          ],
+          "trait": "publishing"
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "kind": "choice",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "values": [
+            "draft",
+            "live"
+          ],
+          "trait": "publishing"
+        },
+        {
+          "id": "priority",
+          "name": "priority",
+          "kind": "integer",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": true,
+          "trait": "publishing"
+        },
+        {
+          "id": "shareImage",
+          "name": "Share image",
+          "kind": "asset",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "accept": [
+            "image/*"
+          ],
+          "trait": "socialCard"
+        },
+        {
+          "id": "readingTime",
+          "name": "Reading time",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true
+        }
+      ]
+    },
+    "page": {
+      "slug": "page",
+      "name": "Page",
+      "version": "01920000-0000-7000-8000-0000000000e1",
+      "traits": [
+        "seo"
+      ],
+      "fields": [
+        {
+          "id": "metaTitle",
+          "name": "Meta title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 70,
+          "trait": "seo"
+        },
+        {
+          "id": "metaDescription",
+          "name": "Meta description",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 160,
+          "trait": "seo"
+        },
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "body",
+          "name": "body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown"
+        }
+      ]
+    },
+    "person": {
+      "slug": "person",
+      "name": "Person",
+      "version": "01920000-0000-7000-8000-0000000000e3",
+      "traits": [
+        "socialCard"
+      ],
+      "fields": [
+        {
+          "id": "shareImage",
+          "name": "Share image",
+          "kind": "asset",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "accept": [
+            "image/*"
+          ],
+          "trait": "socialCard"
+        },
+        {
+          "id": "fullName",
+          "name": "Name",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    }
+  },
+  "components": {},
+  "traits": {
+    "publishing": {
+      "slug": "publishing",
+      "name": "Publishing",
+      "version": "01920000-0000-7000-8000-0000000000f3",
+      "fields": [
+        {
+          "id": "publishedAt",
+          "name": "Published",
+          "kind": "datetime",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": true
+        },
+        {
+          "id": "author",
+          "name": "author",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "of": [
+            "person"
+          ]
+        },
+        {
+          "id": "status",
+          "name": "status",
+          "kind": "choice",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "values": [
+            "draft",
+            "live"
+          ]
+        },
+        {
+          "id": "priority",
+          "name": "priority",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true
+        }
+      ]
+    },
+    "seo": {
+      "slug": "seo",
+      "name": "SEO",
+      "version": "01920000-0000-7000-8000-0000000000f1",
+      "fields": [
+        {
+          "id": "metaTitle",
+          "name": "Meta title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 70
+        },
+        {
+          "id": "metaDescription",
+          "name": "Meta description",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 160
+        }
+      ]
+    },
+    "socialCard": {
+      "slug": "socialCard",
+      "name": "Social card",
+      "version": "01920000-0000-7000-8000-0000000000f2",
+      "fields": [
+        {
+          "id": "shareImage",
+          "name": "Share image",
+          "kind": "asset",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "accept": [
+            "image/*"
+          ]
+        }
+      ]
+    }
+  }
+}

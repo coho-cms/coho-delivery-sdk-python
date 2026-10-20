@@ -1,0 +1,36 @@
+name: Check
+
+# Version branches only, such as v2026.1.0: pull requests into one, and commits to one.
+on:
+  pull_request:
+    branches: ['v*']
+  push:
+    branches: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check · py${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      # The generated code in packages/codegen/tests/expected is type-checked with the rest.
+      - run: uv run mypy
+      - run: uv run pytest
+      - name: Build both packages
+        run: |
+          uv build --package coho-delivery-sdk --out-dir dist
+          uv build --package coho-codegen --out-dir dist

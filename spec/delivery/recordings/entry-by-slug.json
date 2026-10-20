@@ -1,0 +1,38 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries-by-slug/chain-1?locale=en-US",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [
+        "00000000-0000-7000-8000-0000000000c1"
+      ],
+      "entries": {
+        "00000000-0000-7000-8000-0000000000c1": {
+          "id": "00000000-0000-7000-8000-0000000000c1",
+          "slug": "chain-1",
+          "type": "article",
+          "locale": "en-US",
+          "fields": {
+            "title": "Chain 1",
+            "rank": 101,
+            "related": [
+              "00000000-0000-7000-8000-0000000000c2"
+            ]
+          }
+        }
+      },
+      "unresolved": {
+        "00000000-0000-7000-8000-0000000000c2": "depth"
+      }
+    }
+  }
+}

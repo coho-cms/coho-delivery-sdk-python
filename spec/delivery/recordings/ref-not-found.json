@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v9.9.9/entries",
+    "auth": "key"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "content-type": "application/problem+json",
+      "etag": false
+    },
+    "body": {
+      "code": "REF_NOT_FOUND",
+      "type": "https://coho.dev/problems/ref-not-found",
+      "title": "Not found",
+      "status": 404,
+      "detail": "No such ref 'v9.9.9'"
+    }
+  }
+}
