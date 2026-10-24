@@ -110,7 +110,7 @@ wheels = [
 
 [[package]]
 name = "coho-codegen"
-version = "2026.1.0"
+version = "2026.1.0a1"
 source = { editable = "packages/codegen" }
 dependencies = [
     { name = "httpx" },
@@ -121,7 +121,7 @@ requires-dist = [{ name = "httpx", specifier = ">=0.27" }]
 
 [[package]]
 name = "coho-delivery-sdk"
-version = "2026.1.0"
+version = "2026.1.0a1"
 source = { editable = "packages/delivery" }
 dependencies = [
     { name = "httpx" },

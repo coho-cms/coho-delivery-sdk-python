@@ -1,6 +1,6 @@
 [project]
 name = "coho-codegen"
-version = "2026.1.0"
+version = "2026.1.0a1"
 description = "Generate a typed Python content library from your Coho content types, and create one from the template."
 readme = "README.md"
 license = "Apache-2.0"
