@@ -1,6 +1,6 @@
 [project]
 name = "coho-delivery-sdk"
-version = "2026.1.0a1"
+version = "2026.2.0a1"
 description = "Read Coho content from Python: the delivery client, and the runtime generated content libraries call."
 readme = "README.md"
 license = "Apache-2.0"
