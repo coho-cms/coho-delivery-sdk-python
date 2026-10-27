@@ -25,7 +25,7 @@ ImageFit = Literal["scale", "pad", "fill", "crop", "thumb"]
 """
 How to resize an image. `scale`, the default, keeps the aspect ratio; `fill` crops to exactly
 the width and height around the focal point, as `crop` and `thumb` do; `pad` fits the image
-inside them, on `background`.
+inside them and fills the rest with a colour the deployment sets.
 """
 
 ImageFormat = Literal["auto", "avif", "webp", "jpg", "png"]
@@ -113,16 +113,19 @@ class Asset(CohoModel):
         fit: ImageFit | None = None,
         format: ImageFormat | None = None,
         quality: int | None = None,
-        background: str | None = None,
     ) -> str:
         """
         The asset's URL, resized when asked. A file that is not a raster image, such as an SVG
         or a PDF, has no resizing, so its original is returned whatever the options.
 
         `quality` is 1 to 100, which the edge rounds to a multiple of 5; its default is 75.
-        `background` is the colour around a `pad`, as `rrggbb`.
+
+        There is no `background`. A `pad` is filled, and a `jpg` flattened, with a colour the
+        deployment sets rather than one a URL carries. It used to be `bg` here: six hex digits,
+        so about seventeen million cache keys for one image and as many transforms, which anyone
+        could walk. Adding it back means adding that back.
         """
-        query = self._image_query(width, height, fit, format, quality, background)
+        query = self._image_query(width, height, fit, format, quality)
         if query == "" or self.image_url is None:
             return self._original()
         return f"{self.image_url}?{query}"
@@ -135,7 +138,6 @@ class Asset(CohoModel):
         fit: ImageFit | None = None,
         format: ImageFormat | None = None,
         quality: int | None = None,
-        background: str | None = None,
         widths: Sequence[int] | None = None,
         densities: Sequence[float] | None = None,
     ) -> str:
@@ -158,7 +160,6 @@ class Asset(CohoModel):
                 fit=fit,
                 format=format,
                 quality=quality,
-                background=background,
             )
 
         if densities is not None:
@@ -194,7 +195,6 @@ class Asset(CohoModel):
         fit: ImageFit | None,
         format: ImageFormat | None,
         quality: int | None,
-        background: str | None,
     ) -> str:
         """The query the edge resizes from, in a fixed order, so equal options make equal URLs."""
         params: list[tuple[str, str | int | float | None]] = [
@@ -203,7 +203,6 @@ class Asset(CohoModel):
             ("fit", fit),
             ("fm", format),
             ("q", quality),
-            ("bg", background),
         ]
         # The edge cannot look the focal point up, so a crop is told where to centre.
         focal = self.focal_point
