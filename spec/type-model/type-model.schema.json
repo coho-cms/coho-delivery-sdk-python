@@ -31,7 +31,7 @@
     },
     "components": {
       "type": "object",
-      "description": "Since 1.2: component types keyed by slug, in sorted order, the types a repeater's items may be. The same shape as `types`, and never sortable. A component's slug is never also a content type's. Absent before 1.2, which a reader takes as empty.",
+      "description": "Since 1.2: component types keyed by slug, in sorted order, the types a repeater's items may be. The same shape as `types`, and never sortable. A component's slug is never also a content type's. Since 1.6 a component's field may itself be a repeater, so items hold items, up to 5 levels deep in any entry, and a component may hold itself; generated code filters and hydrates items at every level. Absent before 1.2, which a reader takes as empty.",
       "additionalProperties": { "$ref": "#/$defs/type" }
     },
     "traits": {

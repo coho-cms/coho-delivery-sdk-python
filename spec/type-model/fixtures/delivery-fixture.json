@@ -1,10 +1,10 @@
 {
-  "irVersion": "1.5",
+  "irVersion": "1.6",
   "source": {
     "project": "01920000-0000-7000-8000-00000000c0b1",
     "ref": "v0.0.1",
     "immutable": true,
-    "schemaHash": "sha256:4e05e6369445f4d9717ad1fe6a3520df5c49c09a11c2bba9f2e6aa816f58b000"
+    "schemaHash": "sha256:71b7fd997397b6f7c15f6dff7d579d6679a395e8dc66f6ed0b19b7c38b302743"
   },
   "types": {
     "article": {
@@ -175,6 +175,25 @@
           "sortable": false
         }
       ]
+    },
+    "outline": {
+      "slug": "outline",
+      "name": "Outline",
+      "version": "01920000-0000-7000-8000-0000000000bb",
+      "fields": [
+        {
+          "id": "sections",
+          "name": "sections",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "outlineSection"
+          ]
+        }
+      ]
     }
   },
   "components": {
@@ -218,6 +237,90 @@
           "required": false,
           "localized": false,
           "sortable": false
+        }
+      ]
+    },
+    "note": {
+      "slug": "note",
+      "name": "Note",
+      "version": "01920000-0000-7000-8000-0000000000be",
+      "fields": [
+        {
+          "id": "text",
+          "name": "text",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    },
+    "outlineSection": {
+      "slug": "outlineSection",
+      "name": "Outline section",
+      "version": "01920000-0000-7000-8000-0000000000bc",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "heading",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "points",
+          "name": "points",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "point"
+          ]
+        },
+        {
+          "id": "notes",
+          "name": "notes",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "of": [
+            "note"
+          ]
+        }
+      ]
+    },
+    "point": {
+      "slug": "point",
+      "name": "Point",
+      "version": "01920000-0000-7000-8000-0000000000bd",
+      "fields": [
+        {
+          "id": "text",
+          "name": "text",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "children",
+          "name": "children",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "point"
+          ]
         }
       ]
     },

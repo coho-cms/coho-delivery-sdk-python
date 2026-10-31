@@ -44,6 +44,7 @@ known-first-party = [
     "delivery_fixture",
     "inheritance",
     "lists",
+    "nested",
     "repeaters",
     "traits",
 ]

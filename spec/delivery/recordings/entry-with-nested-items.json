@@ -1,0 +1,65 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries/00000000-0000-7000-8000-0000000000b1?locale=en-US",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [
+        "00000000-0000-7000-8000-0000000000b1"
+      ],
+      "entries": {
+        "00000000-0000-7000-8000-0000000000b1": {
+          "id": "00000000-0000-7000-8000-0000000000b1",
+          "slug": "outline-1",
+          "type": "outline",
+          "locale": "en-US",
+          "fields": {
+            "sections": [
+              {
+                "_id": "00000000-0000-7000-8000-0000000000b2",
+                "_type": "outlineSection",
+                "heading": "Plan",
+                "notes": [
+                  {
+                    "_id": "00000000-0000-7000-8000-0000000000b6",
+                    "_type": "note",
+                    "text": "Bring cones"
+                  }
+                ],
+                "points": [
+                  {
+                    "_id": "00000000-0000-7000-8000-0000000000b3",
+                    "_type": "point",
+                    "children": [
+                      {
+                        "_id": "00000000-0000-7000-8000-0000000000b4",
+                        "_type": "point",
+                        "children": [
+                          {
+                            "_id": "00000000-0000-7000-8000-0000000000b5",
+                            "_type": "point"
+                          }
+                        ],
+                        "text": "Measure"
+                      }
+                    ],
+                    "text": "Survey"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "unresolved": {}
+    }
+  }
+}

@@ -344,6 +344,8 @@ def _python_type(owner: str, each: Field, context: _Context, imports: _Imports) 
     if kind == "repeater":
         # A union of the components on the ref. The runtime leaves out an item of any other
         # component (the shape's `items`), so the union is never wrong about what it holds.
+        # A component's repeater is typed the same way (type model 1.6), and may name the
+        # component itself: the annotations are strings, completed once every model exists.
         components = [slug for slug in each.get("of", []) if names.has(slug)]
         if not components:
             return "list[runtime.RepeaterItem]", True

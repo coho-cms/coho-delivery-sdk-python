@@ -53,7 +53,8 @@ class TypeShape:
     """
     The repeater fields, by field id, each with the component types its generated code knows.
     An item of any other component is left out, and reported, so code generated before a
-    component was added never meets an item it has no type for.
+    component was added never meets an item it has no type for. A component's shape has them
+    too (type model 1.6), so items inside items are filtered the same way, at every level.
     """
 
 
@@ -80,6 +81,9 @@ class Issue:
     nor reported. `unknown-item`: a repeater item of a component the code has no type for,
     left out. `invalid-value`: a value its model refuses, such as text where a number belongs;
     the entry is left out, and a link to it is an `invalid` stub.
+
+    `field` is the field's id, or for one inside a repeater item, its path from the entry:
+    `sections/0/points/1/children`.
     """
 
     kind: IssueKind
@@ -187,39 +191,47 @@ class _Pass:
         values: Mapping[str, Any],
         type_shape: TypeShape | None,
         out: dict[str, Any],
+        at: str = "",
     ) -> None:
-        """An entry's or an item's fields, with links followed and items built, into `out`."""
+        """
+        An entry's or an item's fields, with links followed and items built, into `out`. `at`
+        is an item's path from the entry, `sections/0/`, so an issue inside one says where.
+        """
         h = self.h
         links = type_shape.links if type_shape is not None else {}
         items = type_shape.items if type_shape is not None else {}
         for name, value in values.items():
             link = links.get(name)
             components = items.get(name)
+            where = f"{at}{name}"
             if components is not None and isinstance(value, list):
                 out[name] = [
                     built
-                    for item in value
-                    if (built := self.item(entry, name, item, components)) is not None
+                    for index, item in enumerate(value)
+                    if (built := self.item(entry, where, index, item, components)) is not None
                 ]
             elif link is None or value is None:
                 out[name] = value
             elif link.many and isinstance(value, list):
-                out[name] = [self.follow(entry, name, each, link) for each in value]
+                out[name] = [self.follow(entry, where, each, link) for each in value]
             elif not link.many and not isinstance(value, list):
-                out[name] = self.follow(entry, name, value, link)
+                out[name] = self.follow(entry, where, value, link)
             else:
                 have, want = ("one link", "several") if link.many else ("several links", "one")
                 h.report(
                     "unexpected-value",
                     entry,
-                    name,
-                    f"has {have} in '{name}', where its type has {want}",
+                    where,
+                    f"has {have} in '{where}', where its type has {want}",
                 )
                 out[name] = value
 
         for name, default in (type_shape.always if type_shape is not None else {}).items():
             if name not in values:
-                h.report("missing-field", entry, name, f"has no '{name}', which its type requires")
+                where = f"{at}{name}"
+                h.report(
+                    "missing-field", entry, where, f"has no '{where}', which its type requires"
+                )
                 out[name] = copy.deepcopy(default)
 
     def follow(self, entry: Entry, field: str, value: Any, link: Link) -> Any:
@@ -257,8 +269,13 @@ class _Pass:
         return done
 
     def item(
-        self, entry: Entry, field: str, item: Any, components: tuple[str, ...]
+        self, entry: Entry, field: str, index: int, item: Any, components: tuple[str, ...]
     ) -> ItemBase | None:
+        """
+        One item of the repeater at `field`, or None when it is left out. Its own repeaters
+        are built the same way, through `fields`, so the recursion goes as deep as the data
+        does and no deeper: delivery nests items 5 deep at most.
+        """
         h = self.h
         component = item.get("_type") if isinstance(item, dict) else None
         if not isinstance(component, str) or component not in components:
@@ -270,12 +287,14 @@ class _Pass:
             )
             return None
         component_shape = h.shape.get(component)
+        at = f"{field}/{index}"
         out: dict[str, Any] = {key: value for key, value in item.items() if key.startswith("_")}
         self.fields(
             entry,
             {key: value for key, value in item.items() if not key.startswith("_")},
             component_shape,
             out,
+            f"{at}/",
         )
         model = (
             component_shape.model
@@ -290,7 +309,7 @@ class _Pass:
             h.report(
                 "invalid-value",
                 entry,
-                f"{field}/{_where(error)}",
+                f"{at}/{_where(error)}",
                 f"has an item in '{field}' that does not match '{component}', and is left out: {_first(error)}",
             )
             return None

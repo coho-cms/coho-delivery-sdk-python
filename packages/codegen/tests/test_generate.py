@@ -173,6 +173,40 @@ def test_a_trait_declares_a_list_as_a_sequence_and_a_localized_one_as_optional()
     assert "def tags(self) -> Sequence[str] | None:" in tagged
 
 
+def test_a_component_holding_itself_is_a_recursive_model() -> None:
+    menu_item = contents(generate(fixture("nested")), "menu_item.py")
+    assert "children: list[MenuItem] = []" in menu_item
+    # Its own name needs no import.
+    assert "TYPE_CHECKING" not in menu_item
+
+
+def test_components_that_hold_each_other_import_each_other_for_type_checkers_alone() -> None:
+    def component(slug: str, holds: str) -> dict[str, Any]:
+        fields = [field("items", "repeater", of=[holds]), field("label")]
+        return {"slug": slug, "name": slug, "version": "1", "fields": fields}
+
+    generated = generate(
+        read_type_model(
+            {
+                **model([field("blocks", "repeater", of=["column"])]),
+                "irVersion": "1.6",
+                "components": {
+                    "column": component("column", "row"),
+                    "row": component("row", "column"),
+                },
+            }
+        )
+    )
+    column, row = contents(generated, "column.py"), contents(generated, "row.py")
+    assert "items: list[Row] = []" in column
+    assert "if TYPE_CHECKING:\n    from .row import Row" in column
+    assert "items: list[Column] = []" in row
+    assert "if TYPE_CHECKING:\n    from .column import Column" in row
+    index = contents(generated, "__init__.py")
+    # Each one's shape lists what its repeater holds, so items are filtered at every level.
+    assert '"items": ("row",),' in index and '"items": ("column",),' in index
+
+
 def test_a_branch_warns_that_its_types_can_change() -> None:
     generated = generate(model([field("title")], immutable=False))
     assert any("a branch" in warning for warning in generated.warnings)

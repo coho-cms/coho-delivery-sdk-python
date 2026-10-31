@@ -1,0 +1,182 @@
+{
+  "irVersion": "1.6",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b8",
+    "ref": "v1.0.0",
+    "immutable": true,
+    "schemaHash": "sha256:0aaccd475a36fc70f9c35f8633c08eb2eb56f49fc5f0e2f2c16934559bfa7eca"
+  },
+  "types": {
+    "page": {
+      "slug": "page",
+      "name": "Page",
+      "version": "01920000-0000-7000-8000-0000000000f1",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "sections",
+          "name": "sections",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "section"
+          ]
+        }
+      ]
+    },
+    "siteNavigation": {
+      "slug": "siteNavigation",
+      "name": "Site navigation",
+      "version": "01920000-0000-7000-8000-0000000000f2",
+      "fields": [
+        {
+          "id": "footerLinks",
+          "name": "footerLinks",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "menuItem"
+          ]
+        },
+        {
+          "id": "topNavigation",
+          "name": "topNavigation",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "of": [
+            "localeMenuItem"
+          ]
+        }
+      ]
+    }
+  },
+  "components": {
+    "card": {
+      "slug": "card",
+      "name": "Card",
+      "version": "01920000-0000-7000-8000-0000000000f4",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "rank",
+          "name": "rank",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    },
+    "localeMenuItem": {
+      "slug": "localeMenuItem",
+      "name": "Locale menu item",
+      "version": "01920000-0000-7000-8000-0000000000f6",
+      "fields": [
+        {
+          "id": "label",
+          "name": "label",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "children",
+          "name": "children",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "localeMenuItem"
+          ]
+        }
+      ]
+    },
+    "menuItem": {
+      "slug": "menuItem",
+      "name": "Menu item",
+      "version": "01920000-0000-7000-8000-0000000000f5",
+      "fields": [
+        {
+          "id": "label",
+          "name": "label",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "children",
+          "name": "children",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "menuItem"
+          ]
+        }
+      ]
+    },
+    "section": {
+      "slug": "section",
+      "name": "Section",
+      "version": "01920000-0000-7000-8000-0000000000f3",
+      "fields": [
+        {
+          "id": "heading",
+          "name": "heading",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "cards",
+          "name": "cards",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "card"
+          ],
+          "max": 12
+        }
+      ]
+    }
+  }
+}

@@ -7,6 +7,7 @@ checks this file too, so a type the generator gets wrong fails there first.
 from __future__ import annotations
 
 import asyncio
+import copy
 from collections.abc import Sequence
 from datetime import UTC, datetime
 
@@ -16,9 +17,21 @@ import coho_delivery_sdk as runtime
 import delivery_fixture
 import inheritance
 import lists
+import nested
 import traits
 from coho_delivery_sdk import ContentConfig, ReleasedConfig, Unresolved, is_resolved, resolved
-from delivery_fixture import Article, AsyncCoho, Citation, Coho, Figure, Step
+from delivery_fixture import (
+    Article,
+    AsyncCoho,
+    Citation,
+    Coho,
+    Figure,
+    Note,
+    Outline,
+    OutlineSection,
+    Point,
+    Step,
+)
 from replay import KEY, RECORDINGS, Replay, graph, recording
 
 CONFIG = ContentConfig(
@@ -85,6 +98,50 @@ def test_localized_items_and_lists_are_read_as_the_locale_has_them() -> None:
     # None in German, on purpose: an empty list, where an untranslated one would be None.
     assert figure.keywords == []
     assert figure.sizes == [3, 5]
+
+
+def test_items_inside_items_are_typed_at_every_level() -> None:
+    outline = coho(Replay()).outline.by_id("00000000-0000-7000-8000-0000000000b1", locale="en-US")
+
+    assert isinstance(outline, Outline)
+    [section] = outline.sections
+    assert isinstance(section, OutlineSection)
+    assert (section.id, section.type, section.heading) == (
+        "00000000-0000-7000-8000-0000000000b2",
+        "outlineSection",
+        "Plan",
+    )
+    # A point holds points: three levels, each its own model, with its own `_id` and `_type`.
+    [first] = section.points
+    [second] = first.children
+    [third] = second.children
+    assert [type(point) for point in (first, second, third)] == [Point, Point, Point]
+    assert [point.id[-2:] for point in (first, second, third)] == ["b3", "b4", "b5"]
+    assert {point.type for point in (first, second, third)} == {"point"}
+    # The third point's text is only in pt-BR, so delivery left it out.
+    assert [point.text for point in (first, second, third)] == ["Survey", "Measure", None]
+    assert third.children == []
+    # `notes` is localized as a whole: the en-US list.
+    assert [(type(note), note.text) for note in section.notes] == [(Note, "Bring cones")]
+
+
+def test_a_nested_item_of_an_unknown_component_is_left_out_where_it_is() -> None:
+    body = copy.deepcopy(graph("entry-with-nested-items"))
+    [entry] = body["entries"].values()
+    first = entry["fields"]["sections"][0]["points"][0]
+    # A component added to the ref after the code was generated, beside a known point.
+    first["children"].insert(0, {"_id": "x", "_type": "callout", "text": "New"})
+    found: list[runtime.Issue] = []
+
+    [outline] = runtime.hydrate(body, delivery_fixture.shape, found.append)
+
+    assert isinstance(outline, Outline)
+    [kept] = outline.sections[0].points[0].children
+    assert isinstance(kept, Point) and kept.text == "Measure"
+    assert [type(point) for point in kept.children] == [Point]
+    assert [(issue.kind, issue.field) for issue in found] == [
+        ("unknown-item", "sections/0/points/0/children")
+    ]
 
 
 @pytest.mark.parametrize(
@@ -239,3 +296,49 @@ def test_a_list_holds_its_values_as_they_are_and_a_list_of_date_times_is_parsed(
     assert event.keywords is None
     [talk] = event.agenda
     assert (talk.speakers, talk.tracks) == (["e"], [])
+
+
+# NESTED
+# NESTED
+# NESTED
+
+
+def test_a_menu_of_menu_items_reads_as_deep_as_it_goes() -> None:
+    def item(id: str, label: str, *children: dict[str, object]) -> dict[str, object]:
+        return {"_id": id, "_type": "menuItem", "label": label, "children": list(children)}
+
+    graph: runtime.EntryGraph = {
+        "roots": ["n"],
+        "entries": {
+            "n": {
+                "id": "n",
+                "slug": "main",
+                "type": "siteNavigation",
+                "locale": "en-US",
+                "fields": {
+                    "footerLinks": [
+                        item("a", "About", item("b", "Team", item("c", "Jobs"))),
+                        item("d", "Contact"),
+                    ],
+                    "topNavigation": [{"_id": "t", "_type": "localeMenuItem", "label": "Home"}],
+                },
+            },
+        },
+        "unresolved": {},
+    }
+    found: list[runtime.Issue] = []
+    [navigation] = runtime.hydrate(graph, nested.shape, found.append)
+
+    assert isinstance(navigation, nested.SiteNavigation)
+    about, contact = navigation.footer_links
+    [team] = about.children
+    [jobs] = team.children
+    assert [(type(m), m.label) for m in (about, team, jobs, contact)] == [
+        (nested.MenuItem, "About"),
+        (nested.MenuItem, "Team"),
+        (nested.MenuItem, "Jobs"),
+        (nested.MenuItem, "Contact"),
+    ]
+    [home] = navigation.top_navigation
+    assert isinstance(home, nested.LocaleMenuItem) and home.children == []
+    assert found == []
