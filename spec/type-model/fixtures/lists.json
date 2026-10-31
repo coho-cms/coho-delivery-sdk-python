@@ -1,0 +1,109 @@
+{
+  "irVersion": "1.5",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b7",
+    "ref": "v1.0.0",
+    "immutable": true,
+    "schemaHash": "sha256:8bef9adebd6b3b2f245437a3f67a1d6b18d24c0e65f5d9440e0a2e70e64687b8"
+  },
+  "types": {
+    "event": {
+      "slug": "event",
+      "name": "Event",
+      "version": "01920000-0000-7000-8000-0000000000e1",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "keywords",
+          "name": "Keywords",
+          "kind": "list",
+          "item": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false,
+          "max": 10
+        },
+        {
+          "id": "scores",
+          "name": "scores",
+          "kind": "list",
+          "item": "number",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "capacity",
+          "name": "capacity",
+          "kind": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": true
+        },
+        {
+          "id": "sessions",
+          "name": "sessions",
+          "kind": "list",
+          "item": "datetime",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false,
+          "min": 1
+        },
+        {
+          "id": "agenda",
+          "name": "agenda",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "talk"
+          ]
+        }
+      ]
+    }
+  },
+  "components": {
+    "talk": {
+      "slug": "talk",
+      "name": "Talk",
+      "version": "01920000-0000-7000-8000-0000000000e2",
+      "fields": [
+        {
+          "id": "speakers",
+          "name": "speakers",
+          "kind": "list",
+          "item": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "tracks",
+          "name": "tracks",
+          "kind": "list",
+          "item": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        }
+      ]
+    }
+  }
+}

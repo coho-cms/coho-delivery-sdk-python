@@ -72,6 +72,9 @@ RASTER_IMAGES = frozenset(
     ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif", "image/heic"]
 )
 
+VALUES = {"text": "str", "integer": "int", "number": "float", "datetime": "datetime"}
+"""The Python type of each kind a list may hold, which a single field of that kind has too."""
+
 
 @dataclass(frozen=True)
 class GeneratedFile:
@@ -301,13 +304,23 @@ def _python_type(owner: str, each: Field, context: _Context, imports: _Imports) 
 
     if kind in ("text", "longText"):
         return "str", False
-    if kind == "datetime":
-        imports.use("datetime", "datetime")
-        return "datetime", False
-    if kind == "integer":
-        return "int", False
-    if kind == "number":
-        return "float", False
+    if kind in VALUES:
+        if kind == "datetime":
+            imports.use("datetime", "datetime")
+        return VALUES[kind], False
+    if kind == "list":
+        # Since type model 1.5: plain values, never links, which delivery sends as they are.
+        item = each.get("item", "")
+        if item not in VALUES:
+            context.warnings.append(
+                f"{owner}.{each['id']} is a list of '{item}', which this generator does not know; "
+                "its values are typed Any. Upgrade coho-codegen."
+            )
+            imports.use("typing", "Any")
+            return "list[Any]", True
+        if item == "datetime":
+            imports.use("datetime", "datetime")
+        return f"list[{VALUES[item]}]", True
     if kind == "boolean":
         return "bool", False
     if kind == "json":
@@ -377,9 +390,22 @@ def _note(each: Field, is_list: bool) -> str:
         notes.append("Markdown.")
     if kind == "longText" and each.get("textFormat") == "html":
         notes.append("HTML.")
-    if each.get("localized", False):
+    if _keeps_empty(each):
+        notes.append(
+            "None where the locale has no translation. Empty is a value: none in this locale."
+        )
+    elif each.get("localized", False):
         notes.append(f"{'Empty' if is_list else 'None'} where the locale has no translation.")
     return " ".join(notes)
+
+
+def _keeps_empty(each: Field) -> bool:
+    """
+    Whether the field is a localized list of values (type model 1.5), whose empty list is a
+    value, none in this locale. Delivery leaves it out only where the locale has no
+    translation, so that is None, rather than empty as any other list is.
+    """
+    return each["kind"] == "list" and each.get("localized", False)
 
 
 def _doc(name: str, note: str = "") -> str:
@@ -402,7 +428,7 @@ def _default(each: Field, is_list: bool) -> str | None:
     """The default a field's declaration takes, or None when it has none: delivery always sends it."""
     if each["presence"] == "always":
         return None
-    return "[]" if is_list else "None"
+    return "[]" if is_list and not _keeps_empty(each) else "None"
 
 
 def _declaration(attribute: str, wire: str, python: str, default: str | None) -> str:
@@ -423,7 +449,7 @@ def _always(each: Field) -> str:
     the empty value of its kind, so the entry still validates. The runtime reports it.
     """
     kind = each["kind"]
-    if each.get("many", False) or kind in ("multichoice", "repeater"):
+    if each.get("many", False) or kind in ("multichoice", "repeater", "list"):
         return "[]"
     return {
         "text": '""',
@@ -608,7 +634,7 @@ def _trait_file(trait: Trait, context: _Context) -> GeneratedFile:
             # A sequence, not a list, so a type that narrows the items still satisfies it.
             imports.use("collections.abc", "Sequence")
             python = f"Sequence{python[len('list') :]}"
-        elif each["presence"] != "always" and not python.endswith("| None"):
+        if _default(each, is_list) == "None" and not python.endswith("| None"):
             python = f"{python} | None"
         uses_runtime = uses_runtime or "runtime." in python
         body += [

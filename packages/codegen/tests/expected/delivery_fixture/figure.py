@@ -10,6 +10,7 @@ import coho_delivery_sdk as runtime
 
 if TYPE_CHECKING:
     from .citation import Citation
+    from .step import Step
 
 
 class Figure(runtime.EntryBase):
@@ -31,3 +32,12 @@ class Figure(runtime.EntryBase):
 
     sources: list[Citation] = []
     """sources"""
+
+    steps: list[Step] = []
+    """steps"""
+
+    keywords: list[str] | None = None
+    """keywords. None where the locale has no translation. Empty is a value: none in this locale."""
+
+    sizes: list[int] = []
+    """sizes"""

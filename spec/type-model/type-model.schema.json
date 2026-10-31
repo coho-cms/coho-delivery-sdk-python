@@ -96,7 +96,7 @@
         "name": { "type": "string", "minLength": 1, "description": "The editors' label; the id when there is none." },
         "kind": {
           "type": "string",
-          "description": "text, longText, number, integer, boolean, datetime, json, repeater, reference, asset (since 1.1), choice or multichoice. A kind a generator does not know is emitted as untyped, with a warning."
+          "description": "text, longText, number, integer, boolean, datetime, json, repeater, reference, asset (since 1.1), choice, multichoice, or list (since 1.5). A kind a generator does not know is emitted as untyped, with a warning."
         },
         "presence": {
           "enum": ["always", "maybe"],
@@ -115,6 +115,10 @@
           "description": "Since 1.3: present, and true, when the field reaches this type exactly as its parent has it: declared by an ancestor, and tightened by none of this type's overrides. A generator may then declare it on the parent alone."
         },
         "many": { "type": "boolean", "description": "On references and assets: an array of links rather than one." },
+        "item": {
+          "enum": ["text", "integer", "number", "datetime"],
+          "description": "On lists (since 1.5): the kind of every value in the array. A localized list is one array per locale, delivered as the requested locale's array. A list is never sortable, and has no ids, so it is replaced whole rather than merged item by item."
+        },
         "accept": {
           "type": "array",
           "items": { "type": "string" },
@@ -134,8 +138,8 @@
           "type": "string",
           "description": "On longText: plain, markdown or html."
         },
-        "min": { "type": "integer", "description": "Length for text, the value for numbers, the count for arrays." },
-        "max": { "type": "integer", "description": "Length for text, the value for numbers, the count for arrays." }
+        "min": { "type": "integer", "description": "Length for text, the value for numbers, the count for arrays, lists included." },
+        "max": { "type": "integer", "description": "Length for text, the value for numbers, the count for arrays, lists included." }
       },
       "allOf": [
         {
@@ -157,6 +161,10 @@
         {
           "if": { "properties": { "kind": { "const": "longText" } } },
           "then": { "required": ["textFormat"] }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "list" } } },
+          "then": { "required": ["item"] }
         }
       ]
     },

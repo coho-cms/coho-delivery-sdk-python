@@ -32,7 +32,7 @@ def test_generation_is_a_pure_function_of_the_model() -> None:
 def model(fields: list[dict[str, Any]], *, slug: str = "page", immutable: bool = True) -> TypeModel:
     return read_type_model(
         {
-            "irVersion": "1.4",
+            "irVersion": "1.5",
             "source": {
                 "project": "p",
                 "ref": "v1",
@@ -102,6 +102,75 @@ def test_an_unknown_kind_is_typed_any_with_a_warning_never_a_failure() -> None:
     generated = generate(model([field("where", "geopoint")]))
     assert "where: Any | None = None" in contents(generated, "page.py")
     assert any("'geopoint'" in warning for warning in generated.warnings)
+
+
+def test_a_list_is_a_list_of_its_items_kind_and_empty_when_absent() -> None:
+    generated = generate(
+        model(
+            [
+                field("tags", "list", item="text"),
+                field("counts", "list", item="integer"),
+                field("weights", "list", item="number"),
+                field("dates", "list", item="datetime"),
+            ]
+        )
+    )
+    page = contents(generated, "page.py")
+    for declaration in (
+        "tags: list[str] = []",
+        "counts: list[int] = []",
+        "weights: list[float] = []",
+        "dates: list[datetime] = []",
+    ):
+        assert declaration in page
+    assert "from datetime import datetime" in page
+    assert not any("does not know" in warning for warning in generated.warnings)
+
+
+def test_a_localized_list_is_none_where_untranslated_and_empty_is_a_value() -> None:
+    page = contents(
+        generate(model([field("tags", "list", item="text", localized=True)])), "page.py"
+    )
+    assert "tags: list[str] | None = None" in page
+    assert (
+        "None where the locale has no translation. Empty is a value: none in this locale." in page
+    )
+
+
+def test_a_list_always_present_has_no_default_and_is_empty_in_the_shape() -> None:
+    generated = generate(
+        model([field("dates", "list", item="datetime", presence="always", required=True, min=1)])
+    )
+    assert "    dates: list[datetime]\n" in contents(generated, "page.py")
+    assert '"dates": [],' in contents(generated, "__init__.py")
+
+
+def test_a_list_in_a_component_is_typed_as_at_the_top_level() -> None:
+    talk = contents(generate(fixture("lists")), "talk.py")
+    assert "speakers: list[str] = []" in talk
+    assert "tracks: list[int] | None = None" in talk
+
+
+def test_a_list_of_a_kind_the_generator_does_not_know_holds_any_with_a_warning() -> None:
+    generated = generate(model([field("spots", "list", item="geopoint")]))
+    assert "spots: list[Any] = []" in contents(generated, "page.py")
+    assert any("a list of 'geopoint'" in warning for warning in generated.warnings)
+
+
+def test_a_trait_declares_a_list_as_a_sequence_and_a_localized_one_as_optional() -> None:
+    trait = {
+        "slug": "tagged",
+        "name": "Tagged",
+        "version": "1",
+        "fields": [
+            field("sizes", "list", item="integer"),
+            field("tags", "list", item="text", localized=True),
+        ],
+    }
+    generated = generate(read_type_model({**model([]), "traits": {"tagged": trait}}))
+    tagged = contents(generated, "tagged.py")
+    assert "def sizes(self) -> Sequence[int]:" in tagged
+    assert "def tags(self) -> Sequence[str] | None:" in tagged
 
 
 def test_a_branch_warns_that_its_types_can_change() -> None:

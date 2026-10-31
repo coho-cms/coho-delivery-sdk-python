@@ -43,6 +43,7 @@ known-first-party = [
     "cli_next_blog",
     "delivery_fixture",
     "inheritance",
+    "lists",
     "repeaters",
     "traits",
 ]

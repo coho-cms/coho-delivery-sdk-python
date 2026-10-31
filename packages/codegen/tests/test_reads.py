@@ -8,14 +8,18 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Sequence
+from datetime import UTC, datetime
+
+import pytest
 
 import coho_delivery_sdk as runtime
 import delivery_fixture
 import inheritance
+import lists
 import traits
 from coho_delivery_sdk import ContentConfig, ReleasedConfig, Unresolved, is_resolved, resolved
-from delivery_fixture import Article, AsyncCoho, Citation, Coho, Figure
-from replay import KEY, Replay
+from delivery_fixture import Article, AsyncCoho, Citation, Coho, Figure, Step
+from replay import KEY, RECORDINGS, Replay, graph, recording
 
 CONFIG = ContentConfig(
     ReleasedConfig(url="https://delivery.test", project="p1", key=KEY), ref="v0.0.1"
@@ -68,6 +72,36 @@ def test_assets_and_repeater_items_are_typed() -> None:
     assert with_sources is not None
     assert [type(item) for item in with_sources.sources] == [Citation, Citation]
     assert with_sources.sources[1].year == 2010
+
+
+def test_localized_items_and_lists_are_read_as_the_locale_has_them() -> None:
+    figure = coho(Replay()).figure.by_id("00000000-0000-7000-8000-0000000000f3", locale="de-DE")
+
+    assert isinstance(figure, Figure)
+    assert [type(step) for step in figure.steps] == [Step, Step]
+    # The second step's label has no German, so delivery left it out.
+    assert [step.label for step in figure.steps] == ["Messen", None]
+    assert [step.minutes for step in figure.steps] == [5, 2]
+    # None in German, on purpose: an empty list, where an untranslated one would be None.
+    assert figure.keywords == []
+    assert figure.sizes == [3, 5]
+
+
+@pytest.mark.parametrize(
+    "name",
+    sorted(
+        path.stem
+        for path in RECORDINGS.glob("*.json")
+        if recording(path.stem)["response"]["status"] == 200
+    ),
+)
+def test_every_recording_reads_through_the_generated_code_without_an_issue(name: str) -> None:
+    found: list[runtime.Issue] = []
+    body = graph(name)
+    roots = runtime.hydrate(body, delivery_fixture.shape, found.append)
+
+    assert len(roots) == len([id for id in body["roots"] if id in body["entries"]])
+    assert found == []
 
 
 def test_an_untyped_read_is_any_entry() -> None:
@@ -170,3 +204,38 @@ def test_an_entry_of_any_type_with_a_trait_is_one() -> None:
 
     seo: Sequence[traits.Seo] = [article]
     assert len(seo) == 1
+
+
+# LISTS
+# LISTS
+# LISTS
+
+
+def test_a_list_holds_its_values_as_they_are_and_a_list_of_date_times_is_parsed() -> None:
+    graph: runtime.EntryGraph = {
+        "roots": ["e"],
+        "entries": {
+            "e": {
+                "id": "e",
+                "slug": "launch",
+                "type": "event",
+                "locale": "en-US",
+                "fields": {
+                    "title": "Launch",
+                    "sessions": ["2026-11-02T09:00:00Z"],
+                    "scores": [4.5, 3],
+                    # Values that look like ids are still values: a list is never a link.
+                    "agenda": [{"_id": "t", "_type": "talk", "speakers": ["e"], "tracks": []}],
+                },
+            },
+        },
+        "unresolved": {},
+    }
+    [event] = runtime.hydrate(graph, lists.shape)
+
+    assert isinstance(event, lists.Event)
+    assert event.sessions == [datetime(2026, 11, 2, 9, tzinfo=UTC)]
+    assert event.scores == [4.5, 3.0]
+    assert event.keywords is None
+    [talk] = event.agenda
+    assert (talk.speakers, talk.tracks) == (["e"], [])

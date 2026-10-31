@@ -36,6 +36,12 @@ class Citation(runtime.ItemBase):
     year: int | None = None
 
 
+class Step(runtime.ItemBase):
+    type: Literal["step"] = Field(alias="_type")
+    label: str | None = None
+    minutes: int | None = None
+
+
 class Figure(runtime.EntryBase):
     type: Literal["figure"] = Field(alias="_type")
     caption: str | None = None
@@ -43,6 +49,9 @@ class Figure(runtime.EntryBase):
     poster: runtime.Asset | None = None
     gallery: list[runtime.Asset] = []
     sources: list[Citation] = []
+    steps: list[Step] = []
+    keywords: list[str] | None = None
+    sizes: list[int] = []
 
 
 Article.model_rebuild()
@@ -51,8 +60,9 @@ SHAPE: runtime.Shape = {
     "article": TypeShape(
         model=Article, links={"related": Link(many=True, targets=("article",))}, always={"rank": 0}
     ),
-    "figure": TypeShape(model=Figure, items={"sources": ("citation",)}),
+    "figure": TypeShape(model=Figure, items={"sources": ("citation",), "steps": ("step",)}),
     "citation": TypeShape(model=Citation, always={"title": ""}),
+    "step": TypeShape(model=Step),
 }
 
 C1, C2, C3, MISSING = (
@@ -170,6 +180,17 @@ def test_repeater_items_are_their_components_and_an_unknown_one_is_left_out() ->
     [figure] = hydrate(graph("entry-with-repeater"), shape, on_issue)
     assert isinstance(figure, Figure) and figure.sources == []
     assert {i.kind for i in found} == {"unknown-item"}
+
+
+def test_a_localized_item_field_is_left_out_where_untranslated_and_lists_are_values() -> None:
+    found, on_issue = issues()
+    [figure] = hydrate(graph("entry-with-localized-items"), SHAPE, on_issue)
+
+    assert isinstance(figure, Figure)
+    assert [(step.label, step.minutes) for step in figure.steps] == [("Messen", 5), (None, 2)]
+    assert figure.keywords == []
+    assert figure.sizes == [3, 5]
+    assert found == []
 
 
 def test_a_content_client_reads_typed_and_reports_each_issue_once_for_its_life() -> None:

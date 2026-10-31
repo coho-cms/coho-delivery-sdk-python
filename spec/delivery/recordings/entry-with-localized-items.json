@@ -1,0 +1,50 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v0.0.1/entries/00000000-0000-7000-8000-0000000000f3?locale=de-DE",
+    "auth": "key"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json; charset=UTF-8",
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": true
+    },
+    "body": {
+      "roots": [
+        "00000000-0000-7000-8000-0000000000f3"
+      ],
+      "entries": {
+        "00000000-0000-7000-8000-0000000000f3": {
+          "id": "00000000-0000-7000-8000-0000000000f3",
+          "slug": "figure-3",
+          "type": "figure",
+          "locale": "de-DE",
+          "fields": {
+            "caption": "With steps",
+            "steps": [
+              {
+                "_id": "00000000-0000-7000-8000-0000000000a3",
+                "_type": "step",
+                "label": "Messen",
+                "minutes": 5
+              },
+              {
+                "_id": "00000000-0000-7000-8000-0000000000a4",
+                "_type": "step",
+                "minutes": 2
+              }
+            ],
+            "keywords": [],
+            "sizes": [
+              3,
+              5
+            ]
+          }
+        }
+      },
+      "unresolved": {}
+    }
+  }
+}

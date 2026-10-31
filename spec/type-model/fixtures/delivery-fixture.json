@@ -1,10 +1,10 @@
 {
-  "irVersion": "1.4",
+  "irVersion": "1.5",
   "source": {
     "project": "01920000-0000-7000-8000-00000000c0b1",
     "ref": "v0.0.1",
     "immutable": true,
-    "schemaHash": "sha256:7cb3daf41cbe9c34e84797f25ff4f3b681d18d3e3281c221b28c51b3dd8a24f2"
+    "schemaHash": "sha256:4e05e6369445f4d9717ad1fe6a3520df5c49c09a11c2bba9f2e6aa816f58b000"
   },
   "types": {
     "article": {
@@ -115,6 +115,39 @@
           "of": [
             "citation"
           ]
+        },
+        {
+          "id": "steps",
+          "name": "steps",
+          "kind": "repeater",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "of": [
+            "step"
+          ]
+        },
+        {
+          "id": "keywords",
+          "name": "keywords",
+          "kind": "list",
+          "item": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "sizes",
+          "name": "sizes",
+          "kind": "list",
+          "item": "integer",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "max": 5
         }
       ]
     },
@@ -181,6 +214,31 @@
           "id": "url",
           "name": "url",
           "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false
+        }
+      ]
+    },
+    "step": {
+      "slug": "step",
+      "name": "Step",
+      "version": "01920000-0000-7000-8000-0000000000ba",
+      "fields": [
+        {
+          "id": "label",
+          "name": "label",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "minutes",
+          "name": "minutes",
+          "kind": "integer",
           "presence": "maybe",
           "required": false,
           "localized": false,

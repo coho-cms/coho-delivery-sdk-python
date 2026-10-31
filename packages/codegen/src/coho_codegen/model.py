@@ -32,6 +32,8 @@ class Field(TypedDict):
     localized: bool
     sortable: bool
     many: NotRequired[bool]
+    item: NotRequired[str]
+    """On lists (1.5): the kind of every value, `text`, `integer`, `number`, or `datetime`."""
     accept: NotRequired[list[str]]
     """On assets (1.1): the media types a linked file may be, or family wildcards. Empty for any."""
     of: NotRequired[list[str]]
