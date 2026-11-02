@@ -1,0 +1,122 @@
+{
+  "irVersion": "1.7",
+  "source": {
+    "project": "01920000-0000-7000-8000-00000000c0b8",
+    "ref": "v0.0.1",
+    "immutable": true,
+    "schemaHash": "sha256:acf4f7f37165979a343c1ad9e384f2d3444eb7c6b42d42dcb8e2e4fb1ce0150e"
+  },
+  "types": {
+    "homePage": {
+      "slug": "homePage",
+      "name": "Home page",
+      "version": "01920000-0000-7000-8000-000000000102",
+      "extends": "page",
+      "singleton": true,
+      "entrySlug": "home-page",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false,
+          "inherited": true
+        },
+        {
+          "id": "body",
+          "name": "body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown",
+          "inherited": true
+        },
+        {
+          "id": "featured",
+          "name": "featured",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": true,
+          "of": [
+            "page"
+          ]
+        }
+      ]
+    },
+    "page": {
+      "slug": "page",
+      "name": "Page",
+      "version": "01920000-0000-7000-8000-000000000101",
+      "fields": [
+        {
+          "id": "title",
+          "name": "title",
+          "kind": "text",
+          "presence": "maybe",
+          "required": true,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "body",
+          "name": "body",
+          "kind": "longText",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "textFormat": "markdown"
+        }
+      ]
+    },
+    "siteSettings": {
+      "slug": "siteSettings",
+      "name": "Site settings",
+      "version": "01920000-0000-7000-8000-000000000103",
+      "singleton": true,
+      "entrySlug": "site-settings",
+      "fields": [
+        {
+          "id": "siteName",
+          "name": "Site name",
+          "kind": "text",
+          "presence": "always",
+          "required": true,
+          "localized": false,
+          "sortable": false
+        },
+        {
+          "id": "tagline",
+          "name": "tagline",
+          "kind": "text",
+          "presence": "maybe",
+          "required": false,
+          "localized": true,
+          "sortable": false
+        },
+        {
+          "id": "home",
+          "name": "home",
+          "kind": "reference",
+          "presence": "maybe",
+          "required": false,
+          "localized": false,
+          "sortable": false,
+          "many": false,
+          "of": [
+            "homePage"
+          ]
+        }
+      ]
+    }
+  },
+  "components": {}
+}

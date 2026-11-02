@@ -54,6 +54,10 @@ class ContentType(TypedDict):
     """Since 1.3: the type this one extends, a key of the same map. `fields` already has what it inherits."""
     abstract: NotRequired[bool]
     """Since 1.3: no entry is of this type itself, only its descendants."""
+    singleton: NotRequired[bool]
+    """Since 1.7: the type has one entry on a ref, which answers to `entrySlug`. Never abstract, and no type extends it."""
+    entrySlug: NotRequired[str]
+    """Since 1.7, on a singleton: the slug its entry answers to, the type's slug in kebab case."""
     traits: NotRequired[list[str]]
     """Since 1.4: every trait it has, each a key of `traits`, its ancestors' first."""
     fields: list[Field]

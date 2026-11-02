@@ -76,6 +76,15 @@
           "const": true,
           "description": "Since 1.3: present, and true, when no entry is of this type itself, only its descendants'. A reference to it links to one of those."
         },
+        "singleton": {
+          "const": true,
+          "description": "Since 1.7: present, and true, when the type has at most one entry on a ref, answering to `entrySlug` (doc 66). Never on a component type, never with `abstract`, and no type extends it. A generator may offer one getter in place of a list."
+        },
+        "entrySlug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "Since 1.7: the slug a singleton's entry answers to, the type's slug in kebab case. Present exactly when `singleton` is."
+        },
         "traits": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },

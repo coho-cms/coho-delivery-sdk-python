@@ -29,10 +29,12 @@ from .client import (
 )
 from .content import (
     AsyncContentClient,
+    AsyncSingletonReader,
     AsyncTypeReader,
     ContentClient,
     ContentConfig,
     Page,
+    SingletonReader,
     TypeReader,
 )
 from .env import config_from_env
@@ -64,6 +66,7 @@ __all__ = [
     "AssetFile",
     "AsyncContentClient",
     "AsyncDeliveryClient",
+    "AsyncSingletonReader",
     "AsyncTypeReader",
     "CohoDeliveryError",
     "CohoModel",
@@ -95,6 +98,7 @@ __all__ = [
     "ReleasedConfig",
     "RepeaterItem",
     "Shape",
+    "SingletonReader",
     "Source",
     "TypeReader",
     "TypeShape",

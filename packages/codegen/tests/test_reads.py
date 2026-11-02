@@ -18,6 +18,7 @@ import delivery_fixture
 import inheritance
 import lists
 import nested
+import singletons
 import traits
 from coho_delivery_sdk import ContentConfig, ReleasedConfig, Unresolved, is_resolved, resolved
 from delivery_fixture import (
@@ -32,7 +33,7 @@ from delivery_fixture import (
     Point,
     Step,
 )
-from replay import KEY, RECORDINGS, Replay, graph, recording
+from replay import KEY, RECORDINGS, Answering, Replay, graph, recording
 
 CONFIG = ContentConfig(
     ReleasedConfig(url="https://delivery.test", project="p1", key=KEY), ref="v0.0.1"
@@ -342,3 +343,68 @@ def test_a_menu_of_menu_items_reads_as_deep_as_it_goes() -> None:
     [home] = navigation.top_navigation
     assert isinstance(home, nested.LocaleMenuItem) and home.children == []
     assert found == []
+
+
+# SINGLETONS
+# SINGLETONS
+# SINGLETONS
+
+
+def test_a_singleton_is_read_by_its_getter_as_its_own_model() -> None:
+    answering = Answering(
+        body={
+            "roots": ["s"],
+            "entries": {
+                "s": {
+                    "id": "s",
+                    "slug": "site-settings",
+                    "type": "siteSettings",
+                    "locale": "en-US",
+                    "fields": {"siteName": "Acme", "home": "h"},
+                },
+                "h": {
+                    "id": "h",
+                    "slug": "home-page",
+                    "type": "homePage",
+                    "locale": "en-US",
+                    "fields": {"title": "Home"},
+                },
+            },
+            "unresolved": {},
+        }
+    )
+    client = singletons.Coho(CONFIG, http_client=answering.client())
+
+    settings: singletons.SiteSettings | None = client.site_settings.get(depth=1, locale="en-US")
+    assert settings is not None and settings.site_name == "Acme"
+    assert isinstance(settings.home, singletons.HomePage) and settings.home.title == "Home"
+    assert "/entries-by-slug/site-settings?" in answering.calls[0].url
+    # A singleton has no list, nor a read by slug, since its slug is fixed.
+    assert not hasattr(client.site_settings, "list")
+    assert not hasattr(client.home_page, "by_slug")
+
+
+def test_a_singleton_not_yet_written_is_none_and_its_parent_lists_it_with_its_family() -> None:
+    home: singletons.HomePage | None = singletons.Coho(
+        CONFIG, http_client=Answering().client()
+    ).home_page.get()
+    assert home is None
+
+    def entry(id: str, type: str) -> dict[str, object]:
+        return {"id": id, "slug": id, "type": type, "fields": {"title": id}}
+
+    listed = Answering(
+        body={
+            "roots": ["home-page", "about"],
+            "entries": {
+                "home-page": entry("home-page", "homePage"),
+                "about": entry("about", "page"),
+            },
+            "unresolved": {},
+            "hasMore": False,
+        }
+    )
+    page: runtime.Page[singletons.AnyPage] = singletons.Coho(
+        CONFIG, http_client=listed.client()
+    ).page.list()
+    assert [type(each) for each in page.items] == [singletons.HomePage, singletons.Page]

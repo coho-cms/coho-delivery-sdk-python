@@ -371,6 +371,14 @@ def _choices(each: Field, imports: _Imports) -> str:
     return f"Literal[{', '.join(_literal(value) for value in values)}] | str"
 
 
+def _entry_slug(each: ContentType) -> str | None:
+    """The slug a singleton's one entry answers to (type model 1.7), or None for any other type."""
+    entry_slug = each.get("entrySlug")
+    if not each.get("singleton", False) or not isinstance(entry_slug, str) or not entry_slug:
+        return None
+    return entry_slug
+
+
 def _image_only(each: Field) -> bool:
     """Whether every file the field accepts is a raster image, which always has dimensions."""
     accept = each.get("accept", [])
@@ -492,6 +500,8 @@ def _type_file(
     imports.field_ = True
 
     traits = [names.of(t) for t in each.get("traits", []) if names.has(t)]
+    # Only a content type is a singleton: a component's items are stored in their entries.
+    entry_slug = _entry_slug(each) if kind == "content" else None
     summary = " ".join(
         part
         for part in (
@@ -499,6 +509,9 @@ def _type_file(
             f"Extends {parent}, and has every field it has." if parent is not None else "",
             f"Abstract: {'an item' if kind == 'component' else 'an entry'} is one of the types that extend it."
             if each.get("abstract", False)
+            else "",
+            f"A singleton: its one entry answers to {_literal(entry_slug)}."
+            if entry_slug is not None
             else "",
             f"Has the trait{'' if len(traits) == 1 else 's'} {_listed(traits)}." if traits else "",
         )
@@ -694,7 +707,7 @@ def _index_file(
     concrete = [each for each in types if not each.get("abstract", False)]
     readers = _readers(types, context)
     typing_names = {"TYPE_CHECKING", "TypeAlias", "cast"}
-    if not concrete or any(r.order == "Never" for r in readers):
+    if not concrete or any(r.order == "Never" and r.entry_slug is None for r in readers):
         typing_names.add("Never")
 
     out: list[str] = [
@@ -841,6 +854,8 @@ class _Reader:
     target: str
     order: str
     family: list[str] | None
+    entry_slug: str | None
+    """A singleton's (type model 1.7), which is read by one getter instead."""
 
 
 def _readers(types: Sequence[ContentType], context: _Context) -> list[_Reader]:
@@ -858,6 +873,12 @@ def _readers(types: Sequence[ContentType], context: _Context) -> list[_Reader]:
         if member in members:
             raise CodegenError(f"Two types would both be read as coho.{member}; rename one of them")
         members.add(member)
+        entry_slug = _entry_slug(each)
+        if each.get("singleton", False) and entry_slug is None:
+            context.warnings.append(
+                f"Type '{slug}' is a singleton with no entrySlug, so it is read as an ordinary type. "
+                "Pull the type model again."
+            )
         sortable = any(f.get("sortable", False) for f in each["fields"])
         out.append(
             _Reader(
@@ -867,6 +888,7 @@ def _readers(types: Sequence[ContentType], context: _Context) -> list[_Reader]:
                 target=family.target(slug),
                 order=f"{names.of(slug)}Order" if sortable else "Never",
                 family=family.members(slug) if family.has(slug) else None,
+                entry_slug=entry_slug,
             )
         )
     return out
@@ -875,6 +897,7 @@ def _readers(types: Sequence[ContentType], context: _Context) -> list[_Reader]:
 def _client(readers: Sequence[_Reader], *, asynchronous: bool) -> list[str]:
     cls = "AsyncCoho" if asynchronous else "Coho"
     reader = "runtime.AsyncTypeReader" if asynchronous else "runtime.TypeReader"
+    singleton = "runtime.AsyncSingletonReader" if asynchronous else "runtime.SingletonReader"
     content = "runtime.AsyncContentClient" if asynchronous else "runtime.ContentClient"
     http = "httpx.AsyncClient" if asynchronous else "httpx.Client"
     a = "async " if asynchronous else ""
@@ -886,6 +909,15 @@ def _client(readers: Sequence[_Reader], *, asynchronous: bool) -> list[str]:
     )
     lines = ["", f"class {cls}:", f"{INDENT}{doc}", ""]
     for each in readers:
+        # A singleton (type model 1.7) has one entry, so one getter in place of a list and a
+        # read by slug. No type extends one, so it is read as itself.
+        if each.entry_slug is not None:
+            lines += [
+                f"{INDENT}{each.member}: {singleton}[{each.target}]",
+                f"{INDENT}{_doc(each.name, 'A singleton: `get()` reads its one entry, None before it is first written.')}",
+                "",
+            ]
+            continue
         lines += [
             f"{INDENT}{each.member}: {reader}[{each.target}, {each.order}]",
             f"{INDENT}{_doc(each.name)}",
@@ -907,6 +939,11 @@ def _client(readers: Sequence[_Reader], *, asynchronous: bool) -> list[str]:
         f'{INDENT}{INDENT}"""The untyped reads underneath, for anything the typed ones do not cover."""',
     ]
     for each in readers:
+        if each.entry_slug is not None:
+            lines.append(
+                f"{INDENT}{INDENT}self.{each.member} = self.content.singleton({_literal(each.slug)}, {_literal(each.entry_slug)})"
+            )
+            continue
         family = f", {_tuple(each.family)}" if each.family else ""
         lines.append(
             f"{INDENT}{INDENT}self.{each.member} = self.content.type({_literal(each.slug)}{family})"

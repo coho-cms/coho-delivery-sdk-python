@@ -207,6 +207,36 @@ def test_components_that_hold_each_other_import_each_other_for_type_checkers_alo
     assert '"items": ("row",),' in index and '"items": ("column",),' in index
 
 
+def test_a_singleton_is_read_by_one_getter_at_the_slug_the_type_model_names() -> None:
+    generated = generate(fixture("singletons"))
+    index = contents(generated, "__init__.py")
+
+    assert "    site_settings: runtime.SingletonReader[SiteSettings]\n" in index
+    assert "    site_settings: runtime.AsyncSingletonReader[SiteSettings]\n" in index
+    assert 'self.site_settings = self.content.singleton("siteSettings", "site-settings")\n' in index
+    # It extends page, so a read of page finds it, as any subtype's entry.
+    assert 'self.page = self.content.type("page", ("homePage", "page",))\n' in index
+    assert 'A singleton: its one entry answers to "site-settings".' in contents(
+        generated, "site_settings.py"
+    )
+    assert generated.warnings == []
+
+
+def test_a_singleton_with_no_entry_slug_is_read_as_an_ordinary_type_with_a_warning() -> None:
+    plain = model([field("siteName")], slug="siteSettings")
+    plain["types"]["siteSettings"]["singleton"] = True
+    generated = generate(plain)
+
+    assert "    site_settings: runtime.TypeReader[SiteSettings, Never]\n" in contents(
+        generated, "__init__.py"
+    )
+    assert "A singleton" not in contents(generated, "site_settings.py")
+    assert generated.warnings == [
+        "Type 'siteSettings' is a singleton with no entrySlug, so it is read as an ordinary type. "
+        "Pull the type model again."
+    ]
+
+
 def test_a_branch_warns_that_its_types_can_change() -> None:
     generated = generate(model([field("title")], immutable=False))
     assert any("a branch" in warning for warning in generated.warnings)

@@ -46,6 +46,7 @@ known-first-party = [
     "lists",
     "nested",
     "repeaters",
+    "singletons",
     "traits",
 ]
 

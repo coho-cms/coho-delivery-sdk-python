@@ -146,6 +146,13 @@ class ContentClient:
         """
         return TypeReader(self, slug, tuple(family or (slug,)))
 
+    def singleton(self, slug: str, entry_slug: str) -> SingletonReader[Any]:
+        """
+        The read of a singleton type, whose one entry answers to `entry_slug`. Generated code
+        passes the type model's `entrySlug`, so the slug rule lives in one place, the server.
+        """
+        return SingletonReader(self, slug, entry_slug)
+
     def close(self) -> None:
         self.delivery.close()
 
@@ -205,6 +212,24 @@ class TypeReader(Generic[T, O]):
         return Page(items=cast("list[T]", items), has_more=page["hasMore"])
 
 
+class SingletonReader(Generic[T]):
+    """
+    The read of a singleton type (type model 1.7): a type with one entry on a ref, which
+    answers to a fixed slug. Hydrated as `T`.
+    """
+
+    def __init__(self, content: ContentClient, slug: str, entry_slug: str):
+        self._content = content
+        self._slug = slug
+        self._entry_slug = entry_slug
+
+    def get(self, *, depth: int | None = None, locale: str | None = None) -> T | None:
+        """Its entry, or None before the entry is first written on the ref."""
+        # Read by its slug, as any other entry is: delivery has no route of its own for it.
+        entry = self._content.by_slug(self._entry_slug, depth=depth, locale=locale)
+        return cast("T | None", _of((self._slug,), entry))
+
+
 class AsyncContentClient:
     """Hydrated reads on one ref, asynchronous: `ContentClient`'s reads, awaited."""
 
@@ -253,6 +278,9 @@ class AsyncContentClient:
 
     def type(self, slug: str, family: Sequence[str] | None = None) -> AsyncTypeReader[Any, Any]:
         return AsyncTypeReader(self, slug, tuple(family or (slug,)))
+
+    def singleton(self, slug: str, entry_slug: str) -> AsyncSingletonReader[Any]:
+        return AsyncSingletonReader(self, slug, entry_slug)
 
     async def aclose(self) -> None:
         await self.delivery.aclose()
@@ -308,3 +336,16 @@ class AsyncTypeReader(Generic[T, O]):
         )
         items = [entry for entry in content._h.all(page) if entry.type in self._family]
         return Page(items=cast("list[T]", items), has_more=page["hasMore"])
+
+
+class AsyncSingletonReader(Generic[T]):
+    """The read of a singleton type (type model 1.7), as `T`, awaited."""
+
+    def __init__(self, content: AsyncContentClient, slug: str, entry_slug: str):
+        self._content = content
+        self._slug = slug
+        self._entry_slug = entry_slug
+
+    async def get(self, *, depth: int | None = None, locale: str | None = None) -> T | None:
+        entry = await self._content.by_slug(self._entry_slug, depth=depth, locale=locale)
+        return cast("T | None", _of((self._slug,), entry))

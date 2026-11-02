@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Literal
 
 from pydantic import Field
 
 import coho_delivery_sdk as runtime
 from coho_delivery_sdk import (
+    AsyncContentClient,
     ContentClient,
     ContentConfig,
     EntryGraph,
@@ -218,3 +220,36 @@ def test_a_content_client_reads_typed_and_reports_each_issue_once_for_its_life()
     assert articles.by_slug("nope") is None
     # A slug is unique per ref, not per type: a typed read of another type is None.
     assert content.type("figure").by_slug("chain-1", locale="en-US") is None
+
+
+def test_a_singleton_reads_its_one_entry_by_its_fixed_slug_and_is_none_for_another_types_or_no_ones() -> (
+    None
+):
+    released = ReleasedConfig(url="https://delivery.test", project="p1", key=KEY)
+    replay = Replay()
+    content = ContentClient(
+        ContentConfig(released, ref="v0.0.1", locale="en-US"), SHAPE, http_client=replay.client()
+    )
+    # The recordings have no singleton, so `chain-1` stands in for an entry slug.
+    settings: runtime.SingletonReader[Article] = content.singleton("article", "chain-1")
+
+    entry = settings.get(depth=2)
+    assert isinstance(entry, Article) and entry.title == "Chain 1"
+    assert "/entries-by-slug/chain-1?" in replay.calls[0].url
+    assert content.singleton("notice", "chain-1").get(depth=2) is None
+    # `entry-not-found` was asked with no locale.
+    bare = ContentClient(ContentConfig(released, ref="v0.0.1"), SHAPE, http_client=replay.client())
+    assert bare.singleton("article", "nope").get() is None
+
+    async def read() -> tuple[Article | None, object]:
+        async with AsyncContentClient(
+            ContentConfig(released, ref="v0.0.1", locale="en-US"),
+            SHAPE,
+            http_client=replay.async_client(),
+        ) as awaited:
+            reader: runtime.AsyncSingletonReader[Article] = awaited.singleton("article", "chain-1")
+            return await reader.get(depth=2), await awaited.singleton("notice", "chain-1").get()
+
+    found, other = asyncio.run(read())
+    assert found is not None and found.title == "Chain 1"
+    assert other is None
