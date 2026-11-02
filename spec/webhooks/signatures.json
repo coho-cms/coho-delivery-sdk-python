@@ -1,0 +1,183 @@
+{
+  "description" : "Signatures a Coho webhook receiver must accept and refuse (doc 70 §5). Made by the webhook sender's own code.",
+  "toleranceSeconds" : 300,
+  "cases" : [ {
+    "name" : "standard-webhooks-example",
+    "secret" : "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw",
+    "headers" : {
+      "webhook-id" : "msg_p5jXN8AQM9LWM0D4loKWxJek",
+      "webhook-timestamp" : "1614265330",
+      "webhook-signature" : "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE="
+    },
+    "body" : "{\"test\": 2432232314}",
+    "now" : 1614265330,
+    "valid" : true,
+    "reason" : null
+  }, {
+    "name" : "coho-event",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628221,
+    "valid" : true,
+    "reason" : null
+  }, {
+    "name" : "rotation-current-secret",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98= v1,i0qBxzZtgI5NIa/2nqPFVhDGYjFxBPQFmXb9pJJNFFI="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : true,
+    "reason" : null
+  }, {
+    "name" : "rotation-previous-secret",
+    "secret" : "whsec_3QxXg0mJmb6BW3nFfSm0ozv0vrLwVYbs3IhNgYQ6CXk=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98= v1,i0qBxzZtgI5NIa/2nqPFVhDGYjFxBPQFmXb9pJJNFFI="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : true,
+    "reason" : null
+  }, {
+    "name" : "tolerance-edge-past",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628491,
+    "valid" : true,
+    "reason" : null
+  }, {
+    "name" : "tolerance-edge-future",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793627891,
+    "valid" : true,
+    "reason" : null
+  }, {
+    "name" : "body-changed",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.1\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "signature"
+  }, {
+    "name" : "body-re-encoded",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Caf\\u00e9 Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "signature"
+  }, {
+    "name" : "id-changed",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_00000000000000000000000000000000",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "signature"
+  }, {
+    "name" : "wrong-secret",
+    "secret" : "whsec_3QxXg0mJmb6BW3nFfSm0ozv0vrLwVYbs3IhNgYQ6CXk=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "signature"
+  }, {
+    "name" : "too-old",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628492,
+    "valid" : false,
+    "reason" : "timestamp"
+  }, {
+    "name" : "too-new",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793627890,
+    "valid" : false,
+    "reason" : "timestamp"
+  }, {
+    "name" : "unknown-version-only",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191",
+      "webhook-signature" : "v1a,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "signature"
+  }, {
+    "name" : "no-signature",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-timestamp" : "1793628191"
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "headers"
+  }, {
+    "name" : "no-timestamp",
+    "secret" : "whsec_K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN0H0pI4=",
+    "headers" : {
+      "webhook-id" : "evt_01a19cf4b6c07fc4947ff43db9a8961a",
+      "webhook-signature" : "v1,WH0FpQks1t5Mxn/i0iBSq3tE59yqaUx4/w5zhZKoJ98="
+    },
+    "body" : "{\"id\":\"evt_01a19cf4b6c07fc4947ff43db9a8961a\",\"type\":\"environment.promoted\",\"created_at\":\"2026-11-02T14:03:11.204Z\",\"project\":{\"id\":\"4f6c0b9e-2a51-4d7e-9f0a-6b1c2d3e4f50\",\"name\":\"Café Zürich — site\"},\"actor\":{\"kind\":\"person\",\"id\":\"9b21c7e4-5d3f-4a2b-8c1d-0e9f8a7b6c5d\"},\"data\":{\"environment\":\"prod\",\"tier\":\"prod\",\"target\":{\"kind\":\"tag\",\"name\":\"v1.4.0\"},\"previous\":{\"kind\":\"tag\",\"name\":\"v1.3.2\"},\"rollback\":false,\"description\":null}}",
+    "now" : 1793628191,
+    "valid" : false,
+    "reason" : "headers"
+  } ]
+}

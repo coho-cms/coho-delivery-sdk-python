@@ -128,6 +128,53 @@ post.brochure.download()                                   # the original, as an
 
 Each client keeps a private cache of responses, following `Cache-Control` and `ETag`. A tag named directly is fetched once. An environment is reused for its short `max-age`, then revalidated, which costs a `304` when nothing was promoted. A preview is fetched every time. Pass `cache_size=0` to turn it off. Each read parses its own copy, so no caller can change what another is served.
 
+## Receiving webhooks
+
+Coho signs each webhook request the way [Standard Webhooks](https://www.standardwebhooks.com) does. `webhooks.verify` checks the signature and the timestamp and answers the event, using only the standard library.
+
+**Verify the body exactly as it arrived.** A body parsed and serialized again is not the one that was signed, and is refused, so read the raw bytes: `await request.body()` in FastAPI or Starlette, `request.get_data()` in Flask, never a parsed model or `request.json`.
+
+```python
+import os
+
+from fastapi import FastAPI, HTTPException, Request, Response
+
+from coho_delivery_sdk import webhooks
+
+app = FastAPI()
+
+
+@app.post("/hooks/coho")
+async def coho_webhook(request: Request) -> Response:
+    try:
+        event = webhooks.verify(
+            await request.body(), request.headers, os.environ["COHO_WEBHOOK_SECRET"]
+        )
+    except webhooks.CohoWebhookError as refused:
+        raise HTTPException(400, refused.reason) from refused
+    if event["type"] == "environment.promoted":
+        ...
+    return Response(status_code=204)
+```
+
+```python
+# Flask
+@app.post("/hooks/coho")
+def coho_webhook():
+    try:
+        event = webhooks.verify(request.get_data(), request.headers, os.environ["COHO_WEBHOOK_SECRET"])
+    except webhooks.CohoWebhookError as refused:
+        return refused.reason, 400
+    ...
+    return "", 204
+```
+
+- **A refusal raises `CohoWebhookError`**, whose `reason` is `signature`, `timestamp`, or `headers`. Answer it `400`.
+- **The timestamp must be within five minutes** of the receiver's clock, before or after, so a captured request cannot be replayed. `tolerance_seconds` changes the window, and `now` sets the clock, for tests.
+- **While a secret is rotated, pass both**, `[current, previous]`. For 24 hours each request carries two signatures, one from each, and either is accepted.
+- **Header names match whatever their case**, from a dict or anything with `items()`, such as Starlette's, Flask's, or Django's `request.headers`.
+- **The event is as Coho sent it**, a `WebhookEvent` dict: `id`, `type`, `created_at`, `project`, `actor`, and `data`. Its `id` is the `webhook-id` header too, the same on every attempt, so drop an event already handled; events can arrive twice, and out of order. `data` holds identifiers and counts, never content: read the content itself through delivery.
+
 ## Errors
 
 A refusal raises `CohoDeliveryError`. Branch on its `code`: `REF_NOT_FOUND`, `KEY_REQUIRED`, `PROJECT_NOT_FOUND`, `INVALID_QUERY` or `RESOLUTION_LIMIT` for the request; `ARTIFACT_UNREADABLE` or `POOL_UNAVAILABLE` for the server; or `UNEXPECTED_RESPONSE` for an answer that isn't a problem document. A preview adds `UNAUTHENTICATED`, for a token that has expired or been revoked, and `ACCOUNT_SUSPENDED`, `ACCOUNT_CLOSED` and `USER_SUSPENDED`. A missing entry is `None`, not an error.

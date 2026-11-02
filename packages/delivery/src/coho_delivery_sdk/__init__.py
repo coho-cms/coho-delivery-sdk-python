@@ -8,6 +8,7 @@ gives every content type its own typed reads.
 
 from importlib.metadata import PackageNotFoundError, version
 
+from . import webhooks
 from .assets import (
     IMAGE_WIDTHS,
     RASTER_IMAGE_TYPES,
@@ -108,4 +109,5 @@ __all__ = [
     "hydrate",
     "is_resolved",
     "resolved",
+    "webhooks",
 ]
