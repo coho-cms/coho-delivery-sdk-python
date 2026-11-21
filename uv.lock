@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -110,7 +110,7 @@ wheels = [
 
 [[package]]
 name = "coho-codegen"
-version = "2026.2.0a3"
+version = "2026.2.6"
 source = { editable = "packages/codegen" }
 dependencies = [
     { name = "httpx" },
@@ -121,7 +121,7 @@ requires-dist = [{ name = "httpx", specifier = ">=0.27" }]
 
 [[package]]
 name = "coho-delivery-sdk"
-version = "2026.2.0a3"
+version = "2026.2.6"
 source = { editable = "packages/delivery" }
 dependencies = [
     { name = "httpx" },
