@@ -87,6 +87,13 @@ class Asset(CohoModel):
     id: str | None = None
     """The asset's id: what the entry's field links."""
 
+    slug: str | None = None
+    """
+    The asset's slug, since delivery 2.3.0. What prose names it by: a Markdown or HTML
+    field writes `asset:<slug>`, and a page resolving one matches it against this
+    (coho-data doc 80 ML-1).
+    """
+
     url: str | None = None
     """The original bytes, from the asset CDN."""
 

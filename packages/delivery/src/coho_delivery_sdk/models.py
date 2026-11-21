@@ -7,9 +7,15 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TypeGuard, TypeVar, Union
+from typing import TYPE_CHECKING, TypeGuard, TypeVar, Union
 
 from pydantic import BaseModel, ConfigDict, Field
+
+if TYPE_CHECKING:
+    # Only for the annotation: `assets` imports `CohoModel` from here, so importing it back
+    # at runtime would be a cycle. `rebuild_models()` below resolves the reference once both
+    # modules are loaded.
+    from .assets import Asset
 
 
 class CohoModel(BaseModel):
@@ -47,6 +53,19 @@ class EntryBase(CohoModel):
 
     locale: str | None = Field(default=None, alias="_locale")
     """The locale the entry was projected for. None when none was requested."""
+
+    body_assets: list[Asset] = Field(default_factory=list, alias="_bodyAssets")
+    """
+    The assets this entry's prose points at, since delivery 2.3.0 (coho-data doc 80 §10).
+
+    A Markdown or HTML field names an asset by slug, `asset:bridge-at-dusk`, and Coho records
+    what the prose named on every save. Delivered embedded, like any asset field, so a page
+    can turn a reference back into a URL without a second request.
+
+    A system value rather than a generated field, which is why it is here beside `slug`: no
+    content type declares it, and the type model does not carry it. Empty on an entry whose
+    type could hold no prose, and on one whose prose names nothing.
+    """
 
 
 class ItemBase(CohoModel):
@@ -117,3 +136,18 @@ class Source:
 
     schema_hash: str
     ir_version: str
+
+
+def rebuild_models() -> None:
+    """
+    Resolve [EntryBase]'s forward reference to `Asset`, once both modules are loaded.
+
+    `assets` reads `CohoModel` from here and this reads `Asset` from there, so one of the two
+    has to be deferred. Called from the package's `__init__`, which imports both.
+    """
+    from .assets import Asset  # noqa: F401  (named so the annotation resolves)
+
+    EntryBase.model_rebuild()
+    # And its subclass here: a model is rebuilt per class, not per hierarchy. Generated
+    # entry models are built after this runs, so they resolve as they are declared.
+    HydratedEntry.model_rebuild()

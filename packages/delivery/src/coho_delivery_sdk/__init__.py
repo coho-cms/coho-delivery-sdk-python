@@ -51,6 +51,7 @@ from .models import (
     Source,
     Unresolved,
     is_resolved,
+    rebuild_models,
     resolved,
 )
 from .types import DeliveryWarning, Entry, EntryGraph, EntryList, Problem
@@ -59,6 +60,10 @@ try:
     __version__ = version("coho-delivery-sdk")
 except PackageNotFoundError:  # pragma: no cover  a checkout that was never installed
     __version__ = "0+unknown"
+
+# `EntryBase` holds a list of `Asset`, which cannot be imported where it is declared
+# (models.py says why). Both modules are loaded by now, so the reference resolves here.
+rebuild_models()
 
 __all__ = [
     "IMAGE_WIDTHS",
