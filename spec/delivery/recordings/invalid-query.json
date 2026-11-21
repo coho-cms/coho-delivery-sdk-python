@@ -12,7 +12,7 @@
     },
     "body": {
       "code": "INVALID_QUERY",
-      "type": "https://coho.dev/problems/invalid-query",
+      "type": "https://coho-cms.com/errors/invalid-query",
       "title": "Invalid query",
       "status": 400,
       "detail": "order needs a type: a field is sorted within its type"

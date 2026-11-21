@@ -20,6 +20,7 @@ from coho_delivery_sdk import (
     TypeShape,
     Unresolved,
     hydrate,
+    resolve_entry,
     resolved,
 )
 from replay import KEY, Replay, graph
@@ -47,6 +48,7 @@ class Step(runtime.ItemBase):
 class Figure(runtime.EntryBase):
     type: Literal["figure"] = Field(alias="_type")
     caption: str | None = None
+    body: str | None = None
     image: runtime.ImageAsset | None = None
     poster: runtime.Asset | None = None
     gallery: list[runtime.Asset] = []
@@ -168,6 +170,30 @@ def test_assets_are_embedded_and_a_gone_one_is_none_or_left_out() -> None:
         "image/svg+xml",
         "application/pdf",
     ]
+
+
+def test_a_recorded_body_resolves_to_the_url_delivery_sent_for_the_asset_it_names() -> None:
+    """
+    The prose scheme, against what the server sends rather than a body written here.
+
+    `figure-1`'s body names its image as `asset:bridge`, and the recording carries that asset
+    in `_bodyAssets` — so this checks the resolver, the key it reads, and delivery's embedding
+    of a slug all at once. A hand-written body could not: it would agree with whatever the
+    resolver happened to do.
+    """
+    [figure] = hydrate(graph("entry-with-assets"), SHAPE)
+
+    assert isinstance(figure, Figure)
+    # As delivered: the reference stands, and the asset it names is carried beside it.
+    assert figure.body == "A figure, and the bridge: ![A bridge](asset:bridge)"
+    assert [asset.slug for asset in figure.body_assets] == ["bridge"]
+
+    resolved = resolve_entry(figure)
+    assert figure.image is not None
+    assert resolved.body == f"A figure, and the bridge: ![A bridge]({figure.image.url})"
+
+    # The entry as delivered is untouched, which is what keeps a resolved body out of a write.
+    assert figure.body == "A figure, and the bridge: ![A bridge](asset:bridge)"
 
 
 def test_repeater_items_are_their_components_and_an_unknown_one_is_left_out() -> None:

@@ -12,7 +12,7 @@
     },
     "body": {
       "code": "KEY_REQUIRED",
-      "type": "https://coho.dev/problems/key-required",
+      "type": "https://coho-cms.com/errors/key-required",
       "title": "A delivery key is required",
       "status": 401,
       "detail": "A delivery key is required for 'v0.0.1'"

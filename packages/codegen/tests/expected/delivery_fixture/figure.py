@@ -21,6 +21,9 @@ class Figure(runtime.EntryBase):
     caption: str | None = None
     """caption"""
 
+    body: str | None = None
+    """body. Markdown."""
+
     image: runtime.Asset | None = None
     """image. Accepts image/*. None where the asset it linked is gone."""
 

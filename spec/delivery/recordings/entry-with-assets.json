@@ -22,8 +22,10 @@
           "type": "figure",
           "fields": {
             "caption": "With assets",
+            "body": "A figure, and the bridge: ![A bridge](asset:bridge)",
             "image": {
               "id": "00000000-0000-7000-8000-0000000000e1",
+              "slug": "bridge",
               "title": "The bridge",
               "alt": "A suspension bridge at dusk",
               "focalPoint": {
@@ -44,6 +46,7 @@
             "gallery": [
               {
                 "id": "00000000-0000-7000-8000-0000000000e1",
+                "slug": "bridge",
                 "title": "The bridge",
                 "alt": "A suspension bridge at dusk",
                 "focalPoint": {
@@ -62,6 +65,7 @@
               },
               {
                 "id": "00000000-0000-7000-8000-0000000000e2",
+                "slug": "logo",
                 "file": {
                   "mediaType": "image/svg+xml",
                   "byteSize": 512,
@@ -71,6 +75,7 @@
               },
               {
                 "id": "00000000-0000-7000-8000-0000000000e3",
+                "slug": "brochure",
                 "title": "Brochure",
                 "file": {
                   "mediaType": "application/pdf",
@@ -78,6 +83,27 @@
                   "filename": "brochure.pdf"
                 },
                 "url": "https://assets.example.test/{project}/a/3333333333333333333333333333333333333333333333333333333333333333/brochure.pdf"
+              }
+            ],
+            "_bodyAssets": [
+              {
+                "id": "00000000-0000-7000-8000-0000000000e1",
+                "slug": "bridge",
+                "title": "The bridge",
+                "alt": "A suspension bridge at dusk",
+                "focalPoint": {
+                  "x": 0.25,
+                  "y": 0.75
+                },
+                "file": {
+                  "mediaType": "image/jpeg",
+                  "byteSize": 81234,
+                  "width": 1600,
+                  "height": 900,
+                  "filename": "Bridge at dusk.jpg"
+                },
+                "url": "https://assets.example.test/{project}/a/1111111111111111111111111111111111111111111111111111111111111111/Bridge%20at%20dusk.jpg",
+                "imageUrl": "https://assets.example.test/{project}/i/1111111111111111111111111111111111111111111111111111111111111111/Bridge%20at%20dusk.jpg"
               }
             ]
           }
