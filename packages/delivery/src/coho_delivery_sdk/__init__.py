@@ -54,6 +54,15 @@ from .models import (
     rebuild_models,
     resolved,
 )
+from .prose import (
+    ASSET_SCHEME,
+    BODY_ASSETS_FIELD,
+    asset_reference,
+    body_assets,
+    referenced_slug,
+    resolve_entry,
+    resolve_prose,
+)
 from .types import DeliveryWarning, Entry, EntryGraph, EntryList, Problem
 
 try:
@@ -66,6 +75,8 @@ except PackageNotFoundError:  # pragma: no cover  a checkout that was never inst
 rebuild_models()
 
 __all__ = [
+    "ASSET_SCHEME",
+    "BODY_ASSETS_FIELD",
     "IMAGE_WIDTHS",
     "RASTER_IMAGE_TYPES",
     "Asset",
@@ -110,9 +121,14 @@ __all__ = [
     "TypeShape",
     "Unresolved",
     "__version__",
+    "asset_reference",
+    "body_assets",
     "config_from_env",
     "hydrate",
     "is_resolved",
+    "referenced_slug",
+    "resolve_entry",
+    "resolve_prose",
     "resolved",
     "webhooks",
 ]

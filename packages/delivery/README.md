@@ -124,6 +124,23 @@ post.brochure.download()                                   # the original, as an
 - **`download` asks the edge to send the file as an attachment**, under its own name. The edge does not do so yet: until it does, the download URL opens the file, and needs no change when it starts to.
 - **An asset is as public as its URL**, drafts included, and deleting it does not stop the URL working.
 
+## Assets in prose
+
+A Markdown or HTML field names an asset by **slug** rather than by URL — `![A bridge](asset:bridge-at-dusk)` — so the body carries no asset domain, survives being moved between branches, and is seen by everything that counts a file as used. Coho records what the prose named in the entry's `body_assets`; `resolve_entry` turns one into the other.
+
+```python
+post = resolve_entry(reads.post.by_slug("a-bridge"))
+post.body                                     # every asset: reference now a URL
+resolve_prose(post.body, post.body_assets)    # or one body at a time
+referenced_slug(value)                        # the slug a value references, or None
+```
+
+- **Resolve at the read**, once, rather than at each place a body is drawn: a body usually reaches more than one renderer, and the version none of them can forget is the one where the entry arrives. `resolve_entry` walks an entry to any depth — its own prose, its repeater items, and the entries it links, each against its own `body_assets` — and takes an untyped read's dict as readily as a model.
+- **Never resolve a body you may write back.** A resolved body holds URLs, and saving one destroys the reference the scheme exists to keep: the asset stops counting as used, the link breaks when the file is replaced, and moving the entry to another project carries the old domain with it. Anything that edits content must keep the body exactly as delivered — which is why resolving is a call you make and not something a read does for you. The models are frozen, so what was delivered is still there either way.
+- **A reference the entry does not carry is left as written**, so an image falls back to its alt text. That is an asset not merged onto this ref, or a slug typed by hand; rewriting it to nothing would hide it, and throwing would stop a page over one figure.
+- **`src`, `href` and `poster` resolve**, in a Markdown link or directive and in an HTML field, and only when the whole value is the reference. `alt="asset:x"` and prose about the scheme are left alone.
+- **A `srcset` still needs the asset.** The widths to offer and an image's own dimensions are the asset's, and Markdown has nowhere to put either, so a renderer that wants them matches the resolved URL back to an asset in `body_assets`.
+
 ## Caching
 
 Each client keeps a private cache of responses, following `Cache-Control` and `ETag`. A tag named directly is fetched once. An environment is reused for its short `max-age`, then revalidated, which costs a `304` when nothing was promoted. A preview is fetched every time. Pass `cache_size=0` to turn it off. Each read parses its own copy, so no caller can change what another is served.
