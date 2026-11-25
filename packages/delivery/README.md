@@ -121,7 +121,7 @@ post.brochure.download()                                   # the original, as an
 
 - **Only raster images resize** (`is_image`). An SVG, a PDF or any other file has only its original, which `image` and `srcset` return whatever the options. A field that accepts only raster images is an `ImageAsset`, whose `file` always has dimensions.
 - **The edge snaps widths up** to `IMAGE_WIDTHS`, so a `srcset` built from them lands on cached images.
-- **`download` asks the edge to send the file as an attachment**, under its own name. The edge does not do so yet: until it does, the download URL opens the file, and needs no change when it starts to.
+- **`download` asks the edge to send the file as an attachment**, under its own name, where `url` opens it in the browser.
 - **An asset is as public as its URL**, drafts included, and deleting it does not stop the URL working.
 
 ## Assets in prose
