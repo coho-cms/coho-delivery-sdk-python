@@ -13,7 +13,7 @@
     "body": {
       "code": "REF_NOT_FOUND",
       "type": "https://coho-cms.com/errors/ref-not-found",
-      "title": "Not found",
+      "title": "Ref not found",
       "status": 404,
       "detail": "No such ref 'v9.9.9'"
     }

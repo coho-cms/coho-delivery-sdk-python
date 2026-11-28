@@ -81,7 +81,7 @@ Each file is one request to the delivery API and its answer, recorded from the s
 | `entry-with-repeater` | Repeater items as stored: each with its `_id` and `_type`, the second's `_type` filled in by the server on write |
 | `entry-with-localized-items` | `figure-3` in `de-DE`: the first step's label projected to German and the second's left out, an empty `keywords` list, and `sizes` |
 | `entry-with-nested-items` | `outline-1` in `en-US`: points three levels deep, each `text` projected and the third's left out, and the section's `notes` as the `en-US` list |
-| `entry-not-found`, `ref-not-found`, `invalid-query`, `key-required`, `project-not-found` | The refusals |
+| `entry-not-found`, `ref-not-found`, `invalid-query`, `key-required`, `project-not-found` | The refusals. Each `title` is the one on its code's page in the error reference, at `type`. Branch on `code`, never on `title`: a title is for a person reading it |
 
 ## Type model fixtures
 
